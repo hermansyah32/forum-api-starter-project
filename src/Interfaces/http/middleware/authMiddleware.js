@@ -6,7 +6,7 @@ const authMiddleware = (container) => async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new AuthenticationError('Authorization header is required');
+      throw new AuthenticationError('Missing authentication');
     }
 
     const token = authHeader.replace('Bearer ', '');
