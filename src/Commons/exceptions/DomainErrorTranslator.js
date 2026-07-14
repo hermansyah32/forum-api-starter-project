@@ -21,6 +21,8 @@ DomainErrorTranslator._directories = {
   'ADD_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat thread baru karena tipe data tidak sesuai'),
   'ADD_THREAD.TITLE_LIMIT_CHAR_150': new InvariantError('tidak dapat membuat thread baru karena karakter judul tidak boleh melebihi 150 karakter'),
   'ADD_THREAD.BODY_LIMIT_CHAR_2500': new InvariantError('tidak dapat membuat thread baru karena karakter konten tidak boleh melebihi 2500 karakter'),
+  'ADDED_THREAD.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat thread baru karena properti yang dibutuhkan tidak ada'),
+  'ADDED_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat thread baru karena tipe data tidak sesuai'),
 };
 
 export default DomainErrorTranslator;
