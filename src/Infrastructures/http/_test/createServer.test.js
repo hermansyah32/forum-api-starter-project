@@ -5,6 +5,7 @@ import AuthenticationsTableTestHelper from '../../../../tests/AuthenticationsTab
 import container from '../../container.js';
 import createServer from '../createServer.js';
 import AuthenticationTokenManager from '../../../Applications/security/AuthenticationTokenManager.js';
+import { describe } from 'vitest';
 
 describe('HTTP server', () => {
   afterAll(async () => {
@@ -317,6 +318,102 @@ describe('HTTP server', () => {
       expect(response.status).toEqual(400);
       expect(response.body.status).toEqual('fail');
       expect(response.body.message).toEqual('harus mengirimkan token refresh');
+    });
+  });
+
+  describe('when POST /threads', () => {
+    it('should response 400 when request payload not contain needed property', async () => {
+      // Arrange
+      const requestPayload = {
+        title: 'Discussion Title',
+      };
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+      const app = await createServer(container);
+      const tokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const accessToken = await tokenManager.createAccessToken({ id: 'user-123', username: 'dicoding' });
+      // Action
+      const response = await request(app).post('/threads').set('Authorization', `Bearer ${accessToken}`).send(requestPayload);
+
+      // Assert
+      expect(response.status).toEqual(400);
+      expect(response.body.status).toEqual('fail');
+      expect(response.body.message).toEqual('tidak dapat membuat thread baru karena properti yang dibutuhkan tidak ada');
+    });
+
+    it('should resposne 400 when request payload not not meet data type specification', async () => {
+      // Arrange
+      const requestPayload = {
+        title: 'Discussion Title',
+        body: 123,
+      };
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+      const app = await createServer(container);
+      const tokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const accessToken = await tokenManager.createAccessToken({ id: 'user-123', username: 'dicoding' });
+      // Action
+      const response = await request(app).post('/threads').set('Authorization', `Bearer ${accessToken}`).send(requestPayload);
+      // Assert
+      expect(response.status).toEqual(400);
+      expect(response.body.status).toEqual('fail');
+      expect(response.body.message).toEqual('tidak dapat membuat thread baru karena tipe data tidak sesuai');
+    });
+
+    it('should throw error when payload title more than 150 characters', async () => {
+      // Arrange
+      const randomTextTitle = 'a'.repeat(151);
+      const payload = {
+        title: randomTextTitle,
+        body: 'Forum body',
+      };
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+      const app = await createServer(container);
+      const tokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const accessToken = await tokenManager.createAccessToken({ id: 'user-123', username: 'dicoding' });
+      // Action
+      const response = await request(app).post('/threads').set('Authorization', `Bearer ${accessToken}`).send(payload);
+      // Assert
+      expect(response.status).toEqual(400);
+      expect(response.body.status).toEqual('fail');
+      expect(response.body.message).toEqual('tidak dapat membuat thread baru karena karakter judul tidak boleh melebihi 150 karakter');
+    });
+
+    it('should throw error when payload body more than 2500 characters', async () => {
+      // Arrange
+      const randomTextTitle = 'a'.repeat(2501);
+      const payload = {
+        title: 'a title',
+        body: randomTextTitle,
+      };
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+      const app = await createServer(container);
+      const tokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const accessToken = await tokenManager.createAccessToken({ id: 'user-123', username: 'dicoding' });
+      // Action
+      const response = await request(app).post('/threads').set('Authorization', `Bearer ${accessToken}`).send(payload);
+      // Assert
+      expect(response.status).toEqual(400);
+      expect(response.body.status).toEqual('fail');
+      expect(response.body.message).toEqual('tidak dapat membuat thread baru karena karakter konten tidak boleh melebihi 2500 karakter');
+    });
+
+    it('should response 201 when request payload has full property', async () => {
+      // Arrange
+      const requestPayload = {
+        title: 'Discussion Title',
+        body: 'Discussion Body',
+      };
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+      const app = await createServer(container);
+      const tokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const accessToken = await tokenManager.createAccessToken({ id: 'user-123', username: 'dicoding' });
+      // Action
+      const response = await request(app).post('/threads').set('Authorization', `Bearer ${accessToken}`).send(requestPayload);
+      // Assert
+      expect(response.status).toEqual(201);
+      expect(response.body.status).toEqual('success');
+      expect(response.body.data.addedThread).toHaveProperty('id');
+      expect(response.body.data.addedThread).toHaveProperty('title');
+      expect(response.body.data.addedThread).toHaveProperty('owner');
     });
   });
 
