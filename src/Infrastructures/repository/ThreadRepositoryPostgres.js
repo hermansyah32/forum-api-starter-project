@@ -1,4 +1,4 @@
-import AddThread from '../../Domains/threads/entities/AddThread.js';
+import AddedThread from '../../Domains/threads/entities/AddedThread.js';
 import ThreadRepository from '../../Domains/threads/ThreadRepository.js';
 import InvariantError from '../../Commons/exceptions/InvariantError.js';
 
@@ -20,7 +20,7 @@ class ThreadRepositoryPostgres extends ThreadRepository {
 
     const result = await this._pool.query(query);
 
-    return new AddThread({ ...result.rows[0] });
+    return new AddedThread({ ...result.rows[0] });
   }
 
   async findThreadsById(threadId) {

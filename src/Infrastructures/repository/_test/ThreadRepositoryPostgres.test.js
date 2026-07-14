@@ -1,5 +1,6 @@
 import ThreadsTableTestHelper from '../../../../tests/ThreadsTableTestHelper.js';
 import AddThread from '../../../Domains/threads/entities/AddThread.js';
+import AddedThread from '../../../Domains/threads/entities/AddedThread.js';
 import pool from '../../database/postgres/pool.js';
 import ThreadRepositoryPostgres from '../ThreadRepositoryPostgres.js';
 
@@ -45,11 +46,10 @@ describe('ThreadRepositoryPostgres', () => {
       const addedThread = await threadRepositoryPostgres.addThread(addThread);
 
       // Assert
-      expect(addedThread).toStrictEqual(new AddThread({
+      expect(addedThread).toStrictEqual(new AddedThread({
         id: 'thread-123',
         title: 'a title',
         owner: 'user-123',
-        body: 'a body',
       }));
     });
   });
