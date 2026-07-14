@@ -1,5 +1,6 @@
 import { vi } from 'vitest';
 import AddThread from '../../../Domains/threads/entities/AddThread.js';
+import AddedThread from '../../../Domains/threads/entities/AddedThread.js';
 import ThreadRepository from '../../../Domains/threads/ThreadRepository.js';
 import AddThreadUseCase from '../AddThreadUseCase.js';
 
@@ -13,12 +14,11 @@ describe('AddThreadUseCase', () => {
       owner: 'user-123',
     };
 
-    const mockAddedThread = {
+    const mockAddedThread = new AddedThread({
       id: 'thread-123',
       title: useCasePayload.title,
-      body: useCasePayload.body,
       owner: useCasePayload.owner,
-    };
+    });
 
     const mockThreadRepository = new ThreadRepository();
     mockThreadRepository.addThread = vi.fn()
