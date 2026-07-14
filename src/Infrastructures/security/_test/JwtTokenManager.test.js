@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import jwt from 'jsonwebtoken';
 import InvariantError from '../../../Commons/exceptions/InvariantError.js';
+import AuthenticationError from '../../../Commons/exceptions/AuthenticationError.js';
 import JwtTokenManager from '../JwtTokenManager.js';
 import config from '../../../Commons/config.js';
 
@@ -66,6 +67,30 @@ describe('JwtTokenManager', () => {
       await expect(jwtTokenManager.verifyRefreshToken(refreshToken))
         .resolves
         .not.toThrow(InvariantError);
+    });
+  });
+
+  describe('verifyAccessToken function', () => {
+    it('should throw AuthenticationError when verification failed', async () => {
+      // Arrange
+      const jwtTokenManager = new JwtTokenManager(jwt);
+      const refreshToken = await jwtTokenManager.createRefreshToken({ username: 'dicoding' });
+
+      // Action & Assert
+      await expect(jwtTokenManager.verifyAccessToken(refreshToken))
+        .rejects
+        .toThrow(AuthenticationError);
+    });
+
+    it('should not throw AuthenticationError when access token verified', async () => {
+      // Arrange
+      const jwtTokenManager = new JwtTokenManager(jwt);
+      const accessToken = await jwtTokenManager.createAccessToken({ username: 'dicoding' });
+
+      // Action & Assert
+      await expect(jwtTokenManager.verifyAccessToken(accessToken))
+        .resolves
+        .not.toThrow(AuthenticationError);
     });
   });
 
