@@ -67,6 +67,23 @@ class UserRepositoryPostgres extends UserRepository {
 
     return id;
   }
+
+  async getUserById(id) {
+    const query = {
+      text: 'SELECT id, username, fullname FROM users WHERE id = $1',
+      values: [id],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new InvariantError('user tidak ditemukan');
+    }
+
+    const { username, fullname } = result.rows[0];
+
+    return { id, username, fullname };
+  }
 }
 
 export default UserRepositoryPostgres;

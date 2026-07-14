@@ -1,7 +1,8 @@
 import AuthenticationError from "../../../Commons/exceptions/AuthenticationError.js";
 import AuthenticationTokenManager from "../../../Applications/security/AuthenticationTokenManager.js";
+import UserRepository from "../../../Domains/users/UserRepository.js";
 
-const authMiddleware = (cotnainer) => async (req, res, next) => {
+const authMiddleware = (container) => async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -9,11 +10,14 @@ const authMiddleware = (cotnainer) => async (req, res, next) => {
         }
 
         const token = authHeader.replace('Bearer ', '');
-        await cotnainer.getInstance(AuthenticationTokenManager.name)
+        await container.getInstance(AuthenticationTokenManager.name)
             .verifyAccessToken(token);
-        const decodedPayload = await cotnainer.getInstance(AuthenticationTokenManager.name)
+        const decodedPayload = await container.getInstance(AuthenticationTokenManager.name)
             .decodePayload(token);
-        req.auth = decodedPayload;
+        const userDetail = await container.getInstance(UserRepository.name)
+            .getUserById(decodedPayload.id);
+
+        req.auth = userDetail;
 
         next();
     } catch (error) {

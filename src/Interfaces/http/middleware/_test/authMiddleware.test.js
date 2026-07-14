@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import authMiddleware from '../authMiddleware.js';
 import AuthenticationError from "../../../../Commons/exceptions/AuthenticationError.js";
 import AuthenticationTokenManager from "../../../../Applications/security/AuthenticationTokenManager.js";
+import UserRepository from "../../../../Domains/users/UserRepository.js";
 
 describe('authMiddleware', () => {
     it('should throw AuthenticationError when authorization header is missing', async () => {
@@ -70,10 +71,22 @@ describe('authMiddleware', () => {
         //arrange
         const mockTokenManager = new AuthenticationTokenManager();
         mockTokenManager.verifyAccessToken = vi.fn().mockImplementation(() => Promise.resolve());
-        mockTokenManager.decodePayload = vi.fn().mockImplementation(() => Promise.resolve({ id: 'user-123' }));
+        mockTokenManager.decodePayload = vi.fn().mockImplementation(() => Promise.resolve({ id: 'user-123', username: 'username-of-user' }));
+
+        const mockUserRepository = new UserRepository();
+        mockUserRepository.getUserById = vi.fn()
+            .mockImplementation(() => Promise.resolve({ id: 'user-123', username: 'username-of-user', fullname: 'Fullname of User' }));
 
         const mockContainer = {
-            getInstance: vi.fn().mockReturnValue(mockTokenManager),
+            getInstance: vi.fn().mockImplementation((name) => {
+                if (name === AuthenticationTokenManager.name) {
+                    return mockTokenManager;
+                }
+                if (name === UserRepository.name) {
+                    return mockUserRepository;
+                }
+                return null;
+            }),
         };
 
         const middleware = authMiddleware(mockContainer);
@@ -92,7 +105,7 @@ describe('authMiddleware', () => {
         expect(mockContainer.getInstance).toBeCalledWith(AuthenticationTokenManager.name);
         expect(mockTokenManager.verifyAccessToken).toBeCalledWith('valid-token');
         expect(mockTokenManager.decodePayload).toBeCalledWith('valid-token');
-        expect(req.auth).toStrictEqual({ id: 'user-123' });
+        expect(req.auth).toStrictEqual({ id: 'user-123', username: 'username-of-user', fullname: 'Fullname of User' });
         expect(next).toBeCalledWith();
     });
 });
