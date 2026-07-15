@@ -326,6 +326,22 @@ describe('HTTP server', () => {
   });
 
   describe('when POST /threads', () => {
+    it('should response 401 when request do not have access token', async () => {
+      // Arrange
+      const requestPayload = {
+        title: 'Discussion Title',
+        body: 'Discussion Body',
+      };
+      const app = await createServer(container);
+      // Action
+      const response = await request(app).post('/threads').send(requestPayload);
+
+      // Assert
+      expect(response.status).toEqual(401);
+      expect(response.body.status).toEqual('fail');
+      expect(response.body.message).toEqual('Missing authentication');
+    });
+
     it('should response 400 when request payload not contain needed property', async () => {
       // Arrange
       const requestPayload = {
@@ -344,7 +360,7 @@ describe('HTTP server', () => {
       expect(response.body.message).toEqual('tidak dapat membuat thread baru karena properti yang dibutuhkan tidak ada');
     });
 
-    it('should resposne 400 when request payload not not meet data type specification', async () => {
+    it('should response 400 when request payload not not meet data type specification', async () => {
       // Arrange
       const requestPayload = {
         title: 'Discussion Title',
@@ -422,6 +438,21 @@ describe('HTTP server', () => {
   });
 
   describe('when POST /threads/:threadId/comments', () => {
+    it('should response 401 when request do not have access token', async () => {
+      // Arrange
+      const requestPayload = {
+        content: 'Comment Content',
+      };
+      const app = await createServer(container);
+      // Action
+      const response = await request(app).post('/threads/thread-123/comments').send(requestPayload);
+
+      // Assert
+      expect(response.status).toEqual(401);
+      expect(response.body.status).toEqual('fail');
+      expect(response.body.message).toEqual('Missing authentication');
+    });
+
     it('should response 404 when thread is not found', async () => {
       // Arrange
       const threadId = 'thread-123';
@@ -442,7 +473,7 @@ describe('HTTP server', () => {
       expect(response.body.message).toEqual('thread tidak ditemukan');
     });
 
-    it('should resposne 400 when request payload not have content property', async () => {
+    it('should response 400 when request payload not have content property', async () => {
       // Arrange
       const threadId = 'thread-123';
       const requestPayload = {};
@@ -461,7 +492,7 @@ describe('HTTP server', () => {
       expect(response.body.message).toEqual('tidak dapat membuat komentar baru karena properti yang dibutuhkan tidak ada');
     });
 
-    it('should resposne 400 when request payload not not meet data type specification', async () => {
+    it('should response 400 when request payload not not meet data type specification', async () => {
       // Arrange
       const threadId = 'thread-123';
       const requestPayload = {
@@ -527,6 +558,20 @@ describe('HTTP server', () => {
   });
 
   describe('when DELETE /threads/:threadId/comments/:commentId', () => {
+    it('should response 401 when request do not have access token', async () => {
+      // Arrange
+      const threadId = 'thread-123';
+      const commentId = 'comment-123';
+      const app = await createServer(container);
+      // Action
+      const response = await request(app).delete(`/threads/${threadId}/comments/${commentId}`);
+
+      // Assert
+      expect(response.status).toEqual(401);
+      expect(response.body.status).toEqual('fail');
+      expect(response.body.message).toEqual('Missing authentication');
+    });
+
     it('should response 404 when comment is not found', async () => {
       // Arrange
       const threadId = 'thread-123';
@@ -546,45 +591,47 @@ describe('HTTP server', () => {
       expect(response.body.message).toEqual('komentar tidak ditemukan');
     });
 
-    // it('should response 403 when owner is not authorized', async () => {
-    //   // Arrange
-    //   const threadId = 'thread-123';
-    //   const commentId = 'comment-123';
-    //   await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
-    //   await ThreadsTableTestHelper.addThread({ id: 'thread-123', title: 'Thread Title', body: 'Thread Body', owner: 'user-123' });
-    //   await CommentsTableTestHelper.addComment({ id: 'comment-123', owner: 'user-123', thread_id: 'thread-123', content: 'Comment content' });
-    //   const app = await createServer(container);
-    //   const tokenManager = container.getInstance(AuthenticationTokenManager.name);
-    //   const accessToken = await tokenManager.createAccessToken({ id: 'user-456', username: 'dicoding' });
+    it('should response 403 when owner is not authorized', async () => {
+      // Arrange
+      const threadId = 'thread-123';
+      const commentId = 'comment-123';
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+      await UsersTableTestHelper.addUser({ id: 'user-456', username: 'doe' });
+      await ThreadsTableTestHelper.addThread({ id: threadId, title: 'Thread Title', body: 'Thread Body', owner: 'user-123' });
+      /* eslint-disable-next-line camelcase */
+      await CommentsTableTestHelper.addComment({ id: commentId, owner: 'user-123', thread_id: threadId, content: 'Comment content' });
+      const app = await createServer(container);
+      const tokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const accessToken = await tokenManager.createAccessToken({ id: 'user-456', username: 'doe' });
 
-    //   // Action
-    //   const response = await request(app).delete(`/threads/${threadId}/comments/${commentId}`).set('Authorization', `Bearer ${accessToken}`);
+      // Action
+      const response = await request(app).delete(`/threads/${threadId}/comments/${commentId}`).set('Authorization', `Bearer ${accessToken}`);
 
-    //   // Assert
-    //   expect(response.status).toEqual(403);
-    //   expect(response.body.status).toEqual('fail');
-    //   expect(response.body.message).toEqual('Anda tidak berhak menghapus komentar ini');
-    // });
+      // Assert
+      expect(response.status).toEqual(403);
+      expect(response.body.status).toEqual('fail');
+      expect(response.body.message).toEqual('anda tidak memiliki hak akses untuk menghapus komentar ini');
+    });
 
-    // it('should response 403 when comment is deleted successfully', async () => {
-    //   // Arrange
-    //   const threadId = 'thread-123';
-    //   const commentId = 'comment-123';
-    //   await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
-    //   await ThreadsTableTestHelper.addThread({ id: 'thread-123', title: 'Thread Title', body: 'Thread Body', owner: 'user-123' });
-    //   await CommentsTableTestHelper.addComment({ id: 'comment-123', owner: 'user-123', thread_id: 'thread-123', content: 'Comment content' });
-    //   const app = await createServer(container);
-    //   const tokenManager = container.getInstance(AuthenticationTokenManager.name);
-    //   const accessToken = await tokenManager.createAccessToken({ id: 'user-123', username: 'dicoding' });
+    it('should response 200 when comment is deleted successfully', async () => {
+      // Arrange
+      const threadId = 'thread-123';
+      const commentId = 'comment-123';
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+      await ThreadsTableTestHelper.addThread({ id: threadId, title: 'Thread Title', body: 'Thread Body', owner: 'user-123' });
+      /* eslint-disable-next-line camelcase */
+      await CommentsTableTestHelper.addComment({ id: commentId, owner: 'user-123', thread_id: threadId, content: 'Comment content' });
+      const app = await createServer(container);
+      const tokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const accessToken = await tokenManager.createAccessToken({ id: 'user-123', username: 'dicoding' });
 
-    //   // Action
-    //   const response = await request(app).delete(`/threads/${threadId}/comments/${commentId}`).set('Authorization', `Bearer ${accessToken}`);
+      // Action
+      const response = await request(app).delete(`/threads/${threadId}/comments/${commentId}`).set('Authorization', `Bearer ${accessToken}`);
 
-    //   // Assert
-    //   expect(response.status).toEqual(403);
-    //   expect(response.body.status).toEqual('fail');
-    //   expect(response.body.message).toEqual('Anda tidak berhak menghapus komentar ini');
-    // });
+      // Assert
+      expect(response.status).toEqual(200);
+      expect(response.body.status).toEqual('success');
+    });
   });
 
   it('should handle server error correctly', async () => {

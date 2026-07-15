@@ -59,4 +59,29 @@ describe('AddUserUseCase', () => {
       fullname: useCasePayload.fullname,
     }));
   });
+
+  it('should throw error when username not available', async () => {
+    // Arrange
+    const useCasePayload = {
+      username: 'dicoding',
+      password: 'secret',
+      fullname: 'Dicoding Indonesia',
+    };
+
+    const mockUserRepository = new UserRepository();
+    const mockPasswordHash = new PasswordHash();
+
+    mockUserRepository.verifyAvailableUsername = vi.fn()
+      .mockImplementation(() => Promise.reject(new Error('USER_REPOSITORY.USERNAME_UNAVAILABLE')));
+
+    const addUserUseCase = new AddUserUseCase({
+      userRepository: mockUserRepository,
+      passwordHash: mockPasswordHash,
+    });
+
+    // Action and Assert
+    await expect(addUserUseCase.execute(useCasePayload))
+      .rejects
+      .toThrow('USER_REPOSITORY.USERNAME_UNAVAILABLE');
+  });
 });

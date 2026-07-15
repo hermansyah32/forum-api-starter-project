@@ -108,41 +108,40 @@ describe('authMiddleware', () => {
     expect(next).toBeCalledWith();
   });
 
-  // TODO: Add this test later
-  // it('should throw authentication error key when user is not found', async () => {
-  //   //arrange
-  //   const mockTokenManager = new AuthenticationTokenManager();
-  //   mockTokenManager.verifyAccessToken = vi.fn().mockImplementation(() => Promise.resolve());
-  //   mockTokenManager.decodePayload = vi.fn().mockImplementation(() => Promise.resolve({ id: 'user-123' }));
+  it('should throw authentication error key when user is not found', async () => {
+    //arrange
+    const mockTokenManager = new AuthenticationTokenManager();
+    mockTokenManager.verifyAccessToken = vi.fn().mockImplementation(() => Promise.resolve());
+    mockTokenManager.decodePayload = vi.fn().mockImplementation(() => Promise.resolve({ id: 'user-123' }));
 
-  //   const mockUserRepository = new UserRepository();
-  //   mockUserRepository.getUserById = vi.fn().mockImplementation(() => Promise.resolve(null));
+    const mockUserRepository = new UserRepository();
+    mockUserRepository.getUserById = vi.fn().mockImplementation(() => Promise.resolve(null));
 
-  //   const mockContainer = {
-  //     getInstance: vi.fn().mockImplementation((name) => {
-  //       if (name === AuthenticationTokenManager.name) {
-  //         return mockTokenManager;
-  //       }
-  //       if (name === UserRepository.name) {
-  //         return mockUserRepository;
-  //       }
-  //       return null;
-  //     }),
-  //   };
+    const mockContainer = {
+      getInstance: vi.fn().mockImplementation((name) => {
+        if (name === AuthenticationTokenManager.name) {
+          return mockTokenManager;
+        }
+        if (name === UserRepository.name) {
+          return mockUserRepository;
+        }
+        return null;
+      }),
+    };
 
-  //   const middleware = authMiddleware(mockContainer);
-  //   const req = {
-  //     headers: {
-  //       authorization: 'Bearer valid-token',
-  //     },
-  //   };
-  //   const res = {};
-  //   const next = vi.fn();
+    const middleware = authMiddleware(mockContainer);
+    const req = {
+      headers: {
+        authorization: 'Bearer valid-token',
+      },
+    };
+    const res = {};
+    const next = vi.fn();
 
-  //   //action
-  //   await middleware(req, res, next);
+    //action
+    await middleware(req, res, next);
 
-  //   //assert
-  //   expect(next).toBeCalledWith(new Error('VERIFY_USER_EXIST.NOT_FOUND'));
-  // });
+    //assert
+    expect(next).toBeCalledWith(new Error('VERIFY_USER_EXIST.NOT_FOUND'));
+  });
 });

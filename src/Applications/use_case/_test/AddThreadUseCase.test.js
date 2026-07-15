@@ -38,4 +38,62 @@ describe('AddThreadUseCase', () => {
       owner: useCasePayload.owner,
     }));
   });
+
+  it('should throw error when payload not contain needed property', async () => {
+    // Arrange
+    const useCasePayload = {
+      title: 'some thread',
+    };
+
+    const mockThreadRepository = new ThreadRepository();
+    const addThreadUseCase = new AddThreadUseCase({
+      threadRepository: mockThreadRepository,
+    });
+
+    // Action and Assert
+    await expect(addThreadUseCase.execute(useCasePayload))
+      .rejects
+      .toThrow('ADD_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
+  });
+
+  it('should throw error when payload has different type of needed property', async () => {
+    // Arrange
+    const useCasePayload = {
+      title: 123,
+      body: 'some body',
+      owner: 'user-123',
+    };
+
+    const mockThreadRepository = new ThreadRepository();
+    const addThreadUseCase = new AddThreadUseCase({
+      threadRepository: mockThreadRepository,
+    });
+
+    // Action and Assert
+    await expect(addThreadUseCase.execute(useCasePayload))
+      .rejects
+      .toThrow('ADD_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
+  });
+
+  it('should throw error when thread not found', async () => {
+    // Arrange
+    const useCasePayload = {
+      title: 'some thread',
+      body: 'some body',
+      owner: 'user-123',
+    };
+
+    const mockThreadRepository = new ThreadRepository();
+    mockThreadRepository.addThread = vi.fn()
+      .mockImplementation(() => Promise.reject(new Error('VERIFY_THREAD_EXIST.NOT_FOUND')));
+
+    const addThreadUseCase = new AddThreadUseCase({
+      threadRepository: mockThreadRepository,
+    });
+
+    // Action and Assert
+    await expect(addThreadUseCase.execute(useCasePayload))
+      .rejects
+      .toThrow('VERIFY_THREAD_EXIST.NOT_FOUND');
+  });
 });
