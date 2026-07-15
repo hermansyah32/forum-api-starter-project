@@ -1,4 +1,6 @@
 import InvariantError from './InvariantError.js';
+import NotFoundError from './NotFoundError.js';
+import AuthorizationError from './AuthorizationError.js';
 
 const DomainErrorTranslator = {
   translate(error) {
@@ -23,12 +25,16 @@ DomainErrorTranslator._directories = {
   'ADD_THREAD.BODY_LIMIT_CHAR_2500': new InvariantError('tidak dapat membuat thread baru karena karakter konten tidak boleh melebihi 2500 karakter'),
   'ADDED_THREAD.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat thread baru karena properti yang dibutuhkan tidak ada'),
   'ADDED_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat thread baru karena tipe data tidak sesuai'),
-  'VERIFY_THREAD_EXIST.NOT_FOUND': new InvariantError('thread tidak ditemukan'),
+  'VERIFY_THREAD_EXIST.NOT_FOUND': new NotFoundError('thread tidak ditemukan'),
   'ADD_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat komentar baru karena properti yang dibutuhkan tidak ada'),
   'ADD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat komentar baru karena tipe data tidak sesuai'),
   'ADD_COMMENT.CONTENT_LIMIT_CHAR_2500': new InvariantError('tidak dapat membuat komentar baru karena karakter konten tidak boleh melebihi 2500 karakter'),
   'ADDED_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat komentar baru karena properti yang dibutuhkan tidak ada'),
   'ADDED_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat komentar baru karena tipe data tidak sesuai'),
+  'VERIFY_COMMENT_EXISTS.NOT_FOUND': new NotFoundError('komentar tidak ditemukan'),
+  'DELETE_COMMENT.FORBIDDEN': new AuthorizationError('anda tidak memiliki hak akses untuk menghapus komentar ini'),
+  'DELETE_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat menghapus komentar karena properti yang dibutuhkan tidak ada'),
+  'DELETE_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat menghapus komentar karena tipe data tidak sesuai'),
 };
 
 export default DomainErrorTranslator;

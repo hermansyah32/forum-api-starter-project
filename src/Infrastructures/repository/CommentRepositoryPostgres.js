@@ -1,6 +1,7 @@
 import AddedComment from '../../Domains/comments/entities/AddedComment.js';
 import CommentRepository from '../../Domains/comments/CommentRepository.js';
 import InvariantError from '../../Commons/exceptions/InvariantError.js';
+import NotFoundError from '../../Commons/exceptions/NotFoundError.js';
 
 class CommentRepositoryPostgres extends CommentRepository {
   constructor(pool, idGenerator) {
@@ -32,7 +33,7 @@ class CommentRepositoryPostgres extends CommentRepository {
     const result = await this._pool.query(query);
 
     if (!result.rows.length) {
-      throw new InvariantError('comment tidak ditemukan');
+      return null;
     }
 
     const { id, owner, thread_id, content } = result.rows[0];
@@ -43,6 +44,21 @@ class CommentRepositoryPostgres extends CommentRepository {
       owner,
       content,
     };
+  }
+
+  async deleteCommentById(commentId) {
+    const query = {
+      text: 'DELETE FROM comments WHERE id = $1 RETURNING id',
+      values: [commentId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rows.length) {
+      return null;
+    }
+
+    return true;
   }
 }
 

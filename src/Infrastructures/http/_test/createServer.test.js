@@ -527,6 +527,67 @@ describe('HTTP server', () => {
     });
   });
 
+  describe('when DELETE /threads/:threadId/comments/:commentId', () => {
+    it('should response 404 when comment is not found', async () => {
+      // Arrange
+      const threadId = 'thread-123';
+      const commentId = 'comment-123';
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+      await ThreadsTableTestHelper.addThread({ id: threadId, title: 'Thread Title', body: 'Thread Body', owner: 'user-123' });
+      const app = await createServer(container);
+      const tokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const accessToken = await tokenManager.createAccessToken({ id: 'user-123', username: 'dicoding' });
+
+      // Action
+      const response = await request(app).delete(`/threads/${threadId}/comments/${commentId}`).set('Authorization', `Bearer ${accessToken}`);
+
+      // Assert
+      expect(response.status).toEqual(404);
+      expect(response.body.status).toEqual('fail');
+      expect(response.body.message).toEqual('komentar tidak ditemukan');
+    });
+
+    // it('should response 403 when owner is not authorized', async () => {
+    //   // Arrange
+    //   const threadId = 'thread-123';
+    //   const commentId = 'comment-123';
+    //   await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+    //   await ThreadsTableTestHelper.addThread({ id: 'thread-123', title: 'Thread Title', body: 'Thread Body', owner: 'user-123' });
+    //   await CommentsTableTestHelper.addComment({ id: 'comment-123', owner: 'user-123', thread_id: 'thread-123', content: 'Comment content' });
+    //   const app = await createServer(container);
+    //   const tokenManager = container.getInstance(AuthenticationTokenManager.name);
+    //   const accessToken = await tokenManager.createAccessToken({ id: 'user-456', username: 'dicoding' });
+
+    //   // Action
+    //   const response = await request(app).delete(`/threads/${threadId}/comments/${commentId}`).set('Authorization', `Bearer ${accessToken}`);
+
+    //   // Assert
+    //   expect(response.status).toEqual(403);
+    //   expect(response.body.status).toEqual('fail');
+    //   expect(response.body.message).toEqual('Anda tidak berhak menghapus komentar ini');
+    // });
+
+    // it('should response 403 when comment is deleted successfully', async () => {
+    //   // Arrange
+    //   const threadId = 'thread-123';
+    //   const commentId = 'comment-123';
+    //   await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+    //   await ThreadsTableTestHelper.addThread({ id: 'thread-123', title: 'Thread Title', body: 'Thread Body', owner: 'user-123' });
+    //   await CommentsTableTestHelper.addComment({ id: 'comment-123', owner: 'user-123', thread_id: 'thread-123', content: 'Comment content' });
+    //   const app = await createServer(container);
+    //   const tokenManager = container.getInstance(AuthenticationTokenManager.name);
+    //   const accessToken = await tokenManager.createAccessToken({ id: 'user-123', username: 'dicoding' });
+
+    //   // Action
+    //   const response = await request(app).delete(`/threads/${threadId}/comments/${commentId}`).set('Authorization', `Bearer ${accessToken}`);
+
+    //   // Assert
+    //   expect(response.status).toEqual(403);
+    //   expect(response.body.status).toEqual('fail');
+    //   expect(response.body.message).toEqual('Anda tidak berhak menghapus komentar ini');
+    // });
+  });
+
   it('should handle server error correctly', async () => {
     // Arrange
     const requestPayload = {
