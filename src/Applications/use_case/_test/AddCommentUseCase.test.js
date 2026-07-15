@@ -3,6 +3,7 @@ import AddComment from '../../../Domains/comments/entities/AddComment.js';
 import AddedComment from '../../../Domains/comments/entities/AddedComment.js';
 import CommentRepository from '../../../Domains/comments/CommentRepository.js';
 import AddCommentUseCase from '../AddCommentUseCase.js';
+import ThreadRepository from '../../../Domains/threads/ThreadRepository.js';
 
 
 describe('AddCommentUseCase', () => {
@@ -24,9 +25,13 @@ describe('AddCommentUseCase', () => {
     const mockCommentRepository = new CommentRepository();
     mockCommentRepository.addComment = vi.fn()
       .mockImplementation(() => Promise.resolve(mockAddedComment));
+    const mockThreadRepository = new ThreadRepository();
+    mockThreadRepository.verifyThreadExist = vi.fn()
+      .mockImplementation(() => Promise.resolve(true));
 
     const addCommentUseCase = new AddCommentUseCase({
       commentRepository: mockCommentRepository,
+      threadRepository: mockThreadRepository,
     });
 
     // Action
