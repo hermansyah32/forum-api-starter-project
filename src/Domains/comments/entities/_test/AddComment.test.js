@@ -4,7 +4,7 @@ describe('an AddComment entities', () => {
   it('should throw error when payload did not contain needed property', () => {
     // Arrange
     const missingOwnerPayload = {
-      thread_id: 'thread-123',
+      threadId: 'thread-123',
       content: 'Forum content',
     };
 
@@ -15,7 +15,7 @@ describe('an AddComment entities', () => {
 
     const missingContentPayload = {
       owner: 'user-123',
-      thread_id: 'thread-123',
+      threadId: 'thread-123',
     };
 
     // Action and Assert
@@ -28,25 +28,25 @@ describe('an AddComment entities', () => {
     // Arrange
     const wrongContentPayload = {
       owner: 'user-123',
-      thread_id: 'thread-123',
+      threadId: 'thread-123',
       content: 123,
     };
 
-    const wrongThread_idPayload = {
+    const wrongThreadIdPayload = {
       owner: 'user-123',
-      thread_id: 123,
+      threadId: 123,
       content: 'Forum content',
     };
 
     const wrongOwnerPayload = {
       owner: 123,
-      thread_id: 'thread-123',
+      threadId: 'thread-123',
       content: 'Forum content',
     };
 
     // Action and Assert
     expect(() => new AddComment(wrongContentPayload)).toThrowError('ADD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
-    expect(() => new AddComment(wrongThread_idPayload)).toThrowError('ADD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
+    expect(() => new AddComment(wrongThreadIdPayload)).toThrowError('ADD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
     expect(() => new AddComment(wrongOwnerPayload)).toThrowError('ADD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
   });
 
@@ -55,7 +55,7 @@ describe('an AddComment entities', () => {
     const randomTextContent = 'a'.repeat(2501);
     const payload = {
       owner: 'user-123',
-      thread_id: 'thread-123',
+      threadId: 'thread-123',
       content: randomTextContent,
     };
 
@@ -67,7 +67,7 @@ describe('an AddComment entities', () => {
     // Arrange
     const payload = {
       owner: 'user-123',
-      thread_id: 'thread-123',
+      threadId: 'thread-123',
       content: 'Comment content',
     };
 
@@ -75,7 +75,7 @@ describe('an AddComment entities', () => {
     const addComment = new AddComment(payload);
 
     // Assert
-    expect(addComment.thread_id).toEqual(payload.thread_id);
+    expect(addComment.threadId).toEqual(payload.threadId);
     expect(addComment.content).toEqual(payload.content);
     expect(addComment.owner).toEqual(payload.owner);
   });

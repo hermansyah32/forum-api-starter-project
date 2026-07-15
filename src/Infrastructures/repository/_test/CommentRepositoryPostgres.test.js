@@ -20,7 +20,7 @@ describe('CommentRepositoryPostgres', () => {
       // Arrange
       const addComment = new AddComment({
         owner: 'user-123',
-        thread_id: 'thread-123',
+        threadId: 'thread-123',
         content: 'a body',
       });
       const fakeIdGenerator = () => '123'; // stub!
@@ -38,7 +38,7 @@ describe('CommentRepositoryPostgres', () => {
       // Arrange
       const addComment = new AddComment({
         owner: 'user-123',
-        thread_id: 'thread-123',
+        threadId: 'thread-123',
         content: 'a body',
       });
       const fakeIdGenerator = () => '123'; // stub!
@@ -52,7 +52,6 @@ describe('CommentRepositoryPostgres', () => {
         id: `comment-${fakeIdGenerator()}`,
         content: 'a body',
         owner: 'user-123',
-        thread_id: 'thread-123',
       }));
     });
   });
@@ -64,7 +63,7 @@ describe('CommentRepositoryPostgres', () => {
       await CommentsTableTestHelper.addComment({
         id: 'comment-123',
         owner: 'user-123',
-        thread_id: 'thread-123',
+        threadId: 'thread-123',
         content: 'a body',
       });
 

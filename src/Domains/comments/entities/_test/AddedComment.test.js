@@ -18,7 +18,7 @@ describe('an AddedComment entities', () => {
       id: 123,
       content: 123,
       owner: 'user-123',
-      thread_id: 'thread-123',
+      threadId: 'thread-123',
     };
 
     // Action and Assert
@@ -31,7 +31,6 @@ describe('an AddedComment entities', () => {
       id: 'comment-123',
       content: 'some comment',
       owner: 'user-123',
-      thread_id: 'thread-123',
     };
 
     // Action
@@ -41,6 +40,5 @@ describe('an AddedComment entities', () => {
     expect(addedComment.id).toEqual(payload.id);
     expect(addedComment.content).toEqual(payload.content);
     expect(addedComment.owner).toEqual(payload.owner);
-    expect(addedComment.thread_id).toEqual(payload.thread_id);
   });
 });

@@ -521,7 +521,6 @@ describe('HTTP server', () => {
       expect(response.status).toEqual(201);
       expect(response.body.status).toEqual('success');
       expect(response.body.data.addedComment).toHaveProperty('id');
-      expect(response.body.data.addedComment).toHaveProperty('thread_id');
       expect(response.body.data.addedComment).toHaveProperty('content');
       expect(response.body.data.addedComment).toHaveProperty('owner');
     });

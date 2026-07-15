@@ -11,7 +11,7 @@ describe('AddCommentUseCase', () => {
     // Arrange
     const useCasePayload = {
       owner: 'user-123',
-      thread_id: 'thread-123',
+      threadId: 'thread-123',
       content: 'some comment',
     };
 
@@ -19,7 +19,6 @@ describe('AddCommentUseCase', () => {
       id: 'comment-123',
       content: useCasePayload.content,
       owner: useCasePayload.owner,
-      thread_id: useCasePayload.thread_id,
     });
 
     const mockCommentRepository = new CommentRepository();
@@ -40,7 +39,7 @@ describe('AddCommentUseCase', () => {
     expect(addedComment).toStrictEqual(mockAddedComment);
     expect(mockCommentRepository.addComment).toBeCalledWith(new AddComment({
       owner: useCasePayload.owner,
-      thread_id: useCasePayload.thread_id,
+      threadId: useCasePayload.threadId,
       content: useCasePayload.content,
     }));
   });

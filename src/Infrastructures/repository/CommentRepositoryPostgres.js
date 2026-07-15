@@ -1,7 +1,5 @@
 import AddedComment from '../../Domains/comments/entities/AddedComment.js';
 import CommentRepository from '../../Domains/comments/CommentRepository.js';
-import InvariantError from '../../Commons/exceptions/InvariantError.js';
-import NotFoundError from '../../Commons/exceptions/NotFoundError.js';
 
 class CommentRepositoryPostgres extends CommentRepository {
   constructor(pool, idGenerator) {
@@ -11,17 +9,24 @@ class CommentRepositoryPostgres extends CommentRepository {
   }
 
   async addComment(commentPayload) {
-    const { owner, thread_id, content } = commentPayload;
+    const { owner, threadId, content } = commentPayload;
     const id = `comment-${this._idGenerator()}`;
 
     const query = {
       text: 'INSERT INTO comments VALUES($1, $2, $3, $4) RETURNING id, owner, thread_id, content',
-      values: [id, owner, thread_id, content],
+      values: [id, owner, threadId, content],
     };
 
     const result = await this._pool.query(query);
+    const data = result.rows[0] || {};
 
-    return new AddedComment({ ...result.rows[0] });
+    return new AddedComment(
+      {
+        id: data.id,
+        owner: data.owner,
+        content: data.content,
+      }
+    );
   }
 
   async findCommentById(commentId) {
@@ -36,11 +41,13 @@ class CommentRepositoryPostgres extends CommentRepository {
       return null;
     }
 
-    const { id, owner, thread_id, content } = result.rows[0];
+    /* eslint-disable-next-line camelcase */
+    const { id, owner, thread_id, content } = result.rows[0] || {};
 
     return {
       id,
-      thread_id,
+      /* eslint-disable-next-line camelcase */
+      threadId: thread_id,
       owner,
       content,
     };

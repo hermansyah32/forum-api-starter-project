@@ -1,6 +1,5 @@
 import AddedThread from '../../Domains/threads/entities/AddedThread.js';
 import ThreadRepository from '../../Domains/threads/ThreadRepository.js';
-import InvariantError from '../../Commons/exceptions/InvariantError.js';
 
 class ThreadRepositoryPostgres extends ThreadRepository {
   constructor(pool, idGenerator) {

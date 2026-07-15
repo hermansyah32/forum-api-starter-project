@@ -8,7 +8,7 @@ class AddCommentUseCase {
 
   async execute(useCasePayload) {
     const addComment = new AddComment(useCasePayload);
-    const isThreadExist = await this._threadRepository.verifyThreadExist(useCasePayload.thread_id);
+    const isThreadExist = await this._threadRepository.verifyThreadExist(useCasePayload.threadId);
     if (!isThreadExist) {
       throw new Error('VERIFY_THREAD_EXIST.NOT_FOUND');
     }

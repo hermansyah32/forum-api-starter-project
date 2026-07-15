@@ -1,7 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
 import jwt from 'jsonwebtoken';
-import InvariantError from '../../../Commons/exceptions/InvariantError.js';
-import AuthenticationError from '../../../Commons/exceptions/AuthenticationError.js';
 import JwtTokenManager from '../JwtTokenManager.js';
 import config from '../../../Commons/config.js';
 
@@ -47,7 +45,7 @@ describe('JwtTokenManager', () => {
   });
 
   describe('verifyRefreshToken function', () => {
-    it('should throw InvariantError when verification failed', async () => {
+    it('should throw VERIFY_AUTHENTICATION_EXIST.INVALID_REFRESH_TOKEN when verification failed', async () => {
       // Arrange
       const jwtTokenManager = new JwtTokenManager(jwt);
       const accessToken = await jwtTokenManager.createAccessToken({ username: 'dicoding' });
@@ -55,10 +53,10 @@ describe('JwtTokenManager', () => {
       // Action & Assert
       await expect(jwtTokenManager.verifyRefreshToken(accessToken))
         .rejects
-        .toThrow(InvariantError);
+        .toThrow('VERIFY_AUTHENTICATION_EXIST.INVALID_REFRESH_TOKEN');
     });
 
-    it('should not throw InvariantError when refresh token verified', async () => {
+    it('should not throw VERIFY_AUTHENTICATION_EXIST.INVALID_REFRESH_TOKEN when refresh token verified', async () => {
       // Arrange
       const jwtTokenManager = new JwtTokenManager(jwt);
       const refreshToken = await jwtTokenManager.createRefreshToken({ username: 'dicoding' });
@@ -66,12 +64,12 @@ describe('JwtTokenManager', () => {
       // Action & Assert
       await expect(jwtTokenManager.verifyRefreshToken(refreshToken))
         .resolves
-        .not.toThrow(InvariantError);
+        .not.toThrow('VERIFY_AUTHENTICATION_EXIST.INVALID_REFRESH_TOKEN');
     });
   });
 
   describe('verifyAccessToken function', () => {
-    it('should throw AuthenticationError when verification failed', async () => {
+    it('should throw VERIFY_AUTHENTICATION_EXIST.INVALID_TOKEN when verification failed', async () => {
       // Arrange
       const jwtTokenManager = new JwtTokenManager(jwt);
       const refreshToken = await jwtTokenManager.createRefreshToken({ username: 'dicoding' });
@@ -79,10 +77,10 @@ describe('JwtTokenManager', () => {
       // Action & Assert
       await expect(jwtTokenManager.verifyAccessToken(refreshToken))
         .rejects
-        .toThrow(AuthenticationError);
+        .toThrow('VERIFY_AUTHENTICATION_EXIST.INVALID_TOKEN');
     });
 
-    it('should not throw AuthenticationError when access token verified', async () => {
+    it('should not throw VERIFY_AUTHENTICATION_EXIST.INVALID_TOKEN when access token verified', async () => {
       // Arrange
       const jwtTokenManager = new JwtTokenManager(jwt);
       const accessToken = await jwtTokenManager.createAccessToken({ username: 'dicoding' });
@@ -90,7 +88,7 @@ describe('JwtTokenManager', () => {
       // Action & Assert
       await expect(jwtTokenManager.verifyAccessToken(accessToken))
         .resolves
-        .not.toThrow(AuthenticationError);
+        .not.toThrow('VERIFY_AUTHENTICATION_EXIST.INVALID_TOKEN');
     });
   });
 

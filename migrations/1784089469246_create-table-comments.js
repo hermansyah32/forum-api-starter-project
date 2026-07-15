@@ -9,25 +9,25 @@ export const shorthands = undefined;
  * @returns {Promise<void> | void}
  */
 export const up = (pgm) => {
-    pgm.createTable('comments', {
-        id: {
-            type: 'VARCHAR(50)',
-            primaryKey: true,
-        },
-        owner: {
-            type: 'VARCHAR(50)',
-            notNull: true,
-        },
-        thread_id: {
-            type: 'VARCHAR(50)',
-            notNull: true,
-        },
-        content: {
-            type: 'TEXT',
-            notNull: true,
-        },
-    });
-}
+  pgm.createTable('comments', {
+    id: {
+      type: 'VARCHAR(50)',
+      primaryKey: true,
+    },
+    owner: {
+      type: 'VARCHAR(50)',
+      notNull: true,
+    },
+    thread_id: {
+      type: 'VARCHAR(50)',
+      notNull: true,
+    },
+    content: {
+      type: 'TEXT',
+      notNull: true,
+    },
+  });
+};
 
 /**
  * @param pgm {import('node-pg-migrate').MigrationBuilder}
@@ -35,5 +35,5 @@ export const up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 export const down = (pgm) => {
-    pgm.dropTable('comments');
+  pgm.dropTable('comments');
 };

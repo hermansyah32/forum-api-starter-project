@@ -8,11 +8,11 @@ class DeleteCommentUseCase {
 
   async execute(deleteCommentPayload) {
     const deleteComment = new DeleteComment(deleteCommentPayload);
-    const isThreadExists = this._threadRepository.verifyThreadExist(deleteComment.thread_id);
+    const isThreadExists = await this._threadRepository.verifyThreadExist(deleteComment.threadId);
     if (!isThreadExists) {
       throw new Error('VERIFY_THREAD_EXIST.NOT_FOUND');
     }
-    const comment = await this._commentRepository.findCommentById(deleteComment.comment_id);
+    const comment = await this._commentRepository.findCommentById(deleteComment.commentId);
     if (!comment) {
       throw new Error('VERIFY_COMMENT_EXISTS.NOT_FOUND');
     }
@@ -21,7 +21,7 @@ class DeleteCommentUseCase {
       throw new Error('DELETE_COMMENT.FORBIDDEN');
     }
 
-    return this._commentRepository.deleteCommentById(deleteComment.comment_id);
+    return this._commentRepository.deleteCommentById(deleteComment.commentId);
   }
 }
 

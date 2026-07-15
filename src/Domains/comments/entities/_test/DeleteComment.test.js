@@ -4,18 +4,18 @@ describe('an DeleteComment entities', () => {
   it('should throw error when payload did not contain needed property', () => {
     // Arrange
     const missingOwnerPayload = {
-      thread_id: 'thread-123',
-      comment_id: 'comment-123',
+      threadId: 'thread-123',
+      commentId: 'comment-123',
     };
 
     const missingThreadIdPayload = {
       owner: 'user-123',
-      comment_id: 'comment-123',
+      commentId: 'comment-123',
     };
 
     const missingCommentIdPayload = {
       owner: 'user-123',
-      thread_id: 'thread-123',
+      threadId: 'thread-123',
     };
 
     // Action and Assert
@@ -28,20 +28,20 @@ describe('an DeleteComment entities', () => {
     // Arrange
     const wrongCommentIdPayload = {
       owner: 'user-123',
-      thread_id: 'thread-123',
-      comment_id: 123,
+      threadId: 'thread-123',
+      commentId: 123,
     };
 
     const wrongThreadIdPayload = {
       owner: 'user-123',
-      thread_id: 123,
-      comment_id: 'comment-123',
+      threadId: 123,
+      commentId: 'comment-123',
     };
 
     const wrongOwnerPayload = {
       owner: 123,
-      thread_id: 'thread-123',
-      comment_id: 'comment-123',
+      threadId: 'thread-123',
+      commentId: 'comment-123',
     };
 
     // Action and Assert
@@ -54,15 +54,15 @@ describe('an DeleteComment entities', () => {
     // Arrange
     const payload = {
       owner: 'user-123',
-      thread_id: 'thread-123',
-      comment_id: 'comment-123',
+      threadId: 'thread-123',
+      commentId: 'comment-123',
     };
 
     // Action
     const deleteComment = new DeleteComment(payload);
 
     // Assert
-    expect(deleteComment.thread_id).toEqual(payload.thread_id);
+    expect(deleteComment.threadId).toEqual(payload.threadId);
     expect(deleteComment.content).toEqual(payload.content);
     expect(deleteComment.owner).toEqual(payload.owner);
   });
