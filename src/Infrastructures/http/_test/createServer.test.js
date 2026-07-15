@@ -6,6 +6,8 @@ import container from '../../container.js';
 import createServer from '../createServer.js';
 import AuthenticationTokenManager from '../../../Applications/security/AuthenticationTokenManager.js';
 import { describe } from 'vitest';
+import ThreadsTableTestHelper from '../../../../tests/ThreadsTableTestHelper.js';
+import CommentsTableTestHelper from '../../../../tests/CommentsTableTestHelper.js';
 
 describe('HTTP server', () => {
   afterAll(async () => {
@@ -15,6 +17,8 @@ describe('HTTP server', () => {
   afterEach(async () => {
     await UsersTableTestHelper.cleanTable();
     await AuthenticationsTableTestHelper.cleanTable();
+    await ThreadsTableTestHelper.cleanTable();
+    await CommentsTableTestHelper.cleanTable();
   });
 
   it('should response 404 when request unregistered route', async () => {
@@ -414,6 +418,112 @@ describe('HTTP server', () => {
       expect(response.body.data.addedThread).toHaveProperty('id');
       expect(response.body.data.addedThread).toHaveProperty('title');
       expect(response.body.data.addedThread).toHaveProperty('owner');
+    });
+  });
+
+  describe('when POST /threads/:threadId/comments', () => {
+    it('should response 404 when thread is not found', async () => {
+      // Arrange
+      const threadId = 'thread-123';
+      const requestPayload = {
+        content: 'Comment content'
+      };
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+      const app = await createServer(container);
+      const tokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const accessToken = await tokenManager.createAccessToken({ id: 'user-123', username: 'dicoding' });
+
+      // Action
+      const response = await request(app).post(`/threads/${threadId}/comments`).set('Authorization', `Bearer ${accessToken}`).send(requestPayload);
+
+      // Assert
+      expect(response.status).toEqual(404);
+      expect(response.body.status).toEqual('fail');
+      expect(response.body.message).toEqual('thread tidak ditemukan');
+    });
+
+    it('should resposne 400 when request payload not have content property', async () => {
+      // Arrange
+      const threadId = 'thread-123';
+      const requestPayload = {};
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', title: 'Thread Title', body: 'Thread Body', owner: 'user-123' });
+      const app = await createServer(container);
+      const tokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const accessToken = await tokenManager.createAccessToken({ id: 'user-123', username: 'dicoding' });
+
+      // Action
+      const response = await request(app).post(`/threads/${threadId}/comments`).set('Authorization', `Bearer ${accessToken}`).send(requestPayload);
+
+      // Assert
+      expect(response.status).toEqual(400);
+      expect(response.body.status).toEqual('fail');
+      expect(response.body.message).toEqual('tidak dapat membuat komentar baru karena properti yang dibutuhkan tidak ada');
+    });
+
+    it('should resposne 400 when request payload not not meet data type specification', async () => {
+      // Arrange
+      const threadId = 'thread-123';
+      const requestPayload = {
+        content: 123
+      };
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', title: 'Thread Title', body: 'Thread Body', owner: 'user-123' });
+      const app = await createServer(container);
+      const tokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const accessToken = await tokenManager.createAccessToken({ id: 'user-123', username: 'dicoding' });
+
+      // Action
+      const response = await request(app).post(`/threads/${threadId}/comments`).set('Authorization', `Bearer ${accessToken}`).send(requestPayload);
+
+      // Assert
+      expect(response.status).toEqual(400);
+      expect(response.body.status).toEqual('fail');
+      expect(response.body.message).toEqual('tidak dapat membuat komentar baru karena tipe data tidak sesuai');
+    });
+
+    it('should throw error when payload content more than 2500 characters', async () => {
+      // Arrange
+      const threadId = 'thread-123';
+      const randomTextContent = 'a'.repeat(2501);
+      const payload = {
+        content: randomTextContent,
+      };
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', title: 'Thread Title', body: 'Thread Body', owner: 'user-123' });
+      const app = await createServer(container);
+      const tokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const accessToken = await tokenManager.createAccessToken({ id: 'user-123', username: 'dicoding' });
+
+      // Action
+      const response = await request(app).post(`/threads/${threadId}/comments`).set('Authorization', `Bearer ${accessToken}`).send(payload);
+
+      // Assert
+      expect(response.status).toEqual(400);
+      expect(response.body.status).toEqual('fail');
+      expect(response.body.message).toEqual('tidak dapat membuat komentar baru karena karakter konten tidak boleh melebihi 2500 karakter');
+    });
+
+    it('should response 201 when request payload has full property', async () => {
+      // Arrange
+      const threadId = 'thread-123';
+      const payload = {
+        content: 'Comment content',
+      };
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', title: 'Thread Title', body: 'Thread Body', owner: 'user-123' });
+      const app = await createServer(container);
+      const tokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const accessToken = await tokenManager.createAccessToken({ id: 'user-123', username: 'dicoding' });
+      // Action
+      const response = await request(app).post(`/threads/${threadId}/comments`).set('Authorization', `Bearer ${accessToken}`).send(payload);
+      // Assert
+      expect(response.status).toEqual(201);
+      expect(response.body.status).toEqual('success');
+      expect(response.body.data.addedComment).toHaveProperty('id');
+      expect(response.body.data.addedComment).toHaveProperty('thread_id');
+      expect(response.body.data.addedComment).toHaveProperty('content');
+      expect(response.body.data.addedComment).toHaveProperty('owner');
     });
   });
 

@@ -15,7 +15,8 @@ import UserRepositoryPostgres from './repository/UserRepositoryPostgres.js';
 import BcryptPasswordHash from './security/BcryptPasswordHash.js';
 import ThreadRepository from '../Domains/threads/ThreadRepository.js';
 import ThreadRepositoryPostgres from './repository/ThreadRepositoryPostgres.js';
-
+import CommentRepository from '../Domains/comments/CommentRepository.js';
+import CommentRepositoryPostgres from './repository/CommentRepositoryPostgres.js';
 
 // use case
 import AddUserUseCase from '../Applications/use_case/AddUserUseCase.js';
@@ -27,6 +28,7 @@ import AuthenticationRepositoryPostgres from './repository/AuthenticationReposit
 import LogoutUserUseCase from '../Applications/use_case/LogoutUserUseCase.js';
 import RefreshAuthenticationUseCase from '../Applications/use_case/RefreshAuthenticationUseCase.js';
 import AddThreadUseCase from '../Applications/use_case/AddThreadUseCase.js';
+import AddCommentUseCase from '../Applications/use_case/AddCommentUseCase.js';
 
 // creating container
 const container = createContainer();
@@ -91,6 +93,20 @@ container.register([
         {
           concrete: nanoid,
         },
+      ]
+    }
+  },
+  {
+    key: CommentRepository.name,
+    Class: CommentRepositoryPostgres,
+    parameter: {
+      dependencies: [
+        {
+          concrete: pool,
+        },
+        {
+          concrete: nanoid
+        }
       ]
     }
   }
@@ -183,6 +199,23 @@ container.register([
       ],
     },
   },
+  {
+    key: AddCommentUseCase.name,
+    Class: AddCommentUseCase,
+    parameter: {
+      injectType: 'destructuring',
+      dependencies: [
+        {
+          name: 'commentRepository',
+          internal: CommentRepository.name,
+        },
+        {
+          name: 'threadRepository',
+          internal: ThreadRepository.name,
+        }
+      ]
+    }
+  }
 ]);
 
 export default container;
