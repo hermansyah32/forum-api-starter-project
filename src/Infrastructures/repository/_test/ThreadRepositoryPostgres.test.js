@@ -53,4 +53,33 @@ describe('ThreadRepositoryPostgres', () => {
       }));
     });
   });
+
+  describe('verifyThreadExist function', () => {
+    it('should return true when thread exist', async () => {
+      // Arrange
+      const fakeIdGenerator = () => '123'; // stub!
+      const threadId = `thread${fakeIdGenerator()}`;
+      await ThreadsTableTestHelper.addThread({ id: threadId });
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
+
+      // Action
+      const isExist = await threadRepositoryPostgres.verifyThreadExist(threadId);
+
+      // Assert
+      expect(isExist).toBe(true);
+    });
+
+    it('should return false when thread does not exist', async () => {
+      // Arrange
+      const fakeIdGenerator = () => '123'; // stub!
+      const threadId = `thread${fakeIdGenerator()}`;
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
+
+      // Action
+      const isExist = await threadRepositoryPostgres.verifyThreadExist(threadId);
+
+      // Assert
+      expect(isExist).toBe(false);
+    });
+  });
 });
