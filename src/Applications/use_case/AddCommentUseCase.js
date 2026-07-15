@@ -1,5 +1,4 @@
 import AddComment from '../../Domains/comments/entities/AddComment.js';
-import NotFoundError from '../../Commons/exceptions/NotFoundError.js';
 
 class AddCommentUseCase {
   constructor({ commentRepository, threadRepository }) {
@@ -11,7 +10,7 @@ class AddCommentUseCase {
     const addComment = new AddComment(useCasePayload);
     const isThreadExist = await this._threadRepository.verifyThreadExist(useCasePayload.thread_id);
     if (!isThreadExist) {
-      throw new NotFoundError('thread tidak ditemukan');
+      throw new Error('VERIFY_THREAD_EXIST.NOT_FOUND');
     }
 
     return this._commentRepository.addComment(addComment);

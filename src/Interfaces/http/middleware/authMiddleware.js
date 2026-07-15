@@ -1,4 +1,3 @@
-import AuthenticationError from '../../../Commons/exceptions/AuthenticationError.js';
 import AuthenticationTokenManager from '../../../Applications/security/AuthenticationTokenManager.js';
 import UserRepository from '../../../Domains/users/UserRepository.js';
 
@@ -6,7 +5,7 @@ const authMiddleware = (container) => async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new AuthenticationError('Missing authentication');
+      throw new Error('VERIFY_AUTHENTICATION_EXIST.NOT_FOUND');
     }
 
     const token = authHeader.replace('Bearer ', '');
@@ -16,6 +15,10 @@ const authMiddleware = (container) => async (req, res, next) => {
       .decodePayload(token);
     const userDetail = await container.getInstance(UserRepository.name)
       .getUserById(decodedPayload.id);
+
+    if (!userDetail) {
+      throw new Error('VERIFY_USER_EXIST.NOT_FOUND');
+    }
 
     req.auth = userDetail;
 

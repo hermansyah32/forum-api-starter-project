@@ -32,7 +32,7 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     const result = await this._pool.query(query);
 
     if (!result.rows.length) {
-      throw new InvariantError('thread tidak ditemukan');
+      return null;
     }
 
     const { id, owner, title, body } = result.rows[0];
