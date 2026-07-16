@@ -36,6 +36,9 @@ DomainErrorTranslator._directories = {
   'ADDED_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat balasan karena tipe data tidak sesuai'),
   'DETAIL_THREAD.REPLY_NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat detail thread karena properti balasan yang dibutuhkan tidak ada'),
   'DETAIL_THREAD.REPLY_NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat detail thread karena tipe data balasan tidak sesuai'),
+  'DELETE_REPLY.FORBIDDEN': new AuthorizationError('anda tidak memiliki hak akses untuk menghapus balasan ini'),
+  'DELETE_REPLY.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat menghapus balasan karena properti yang dibutuhkan tidak ada'),
+  'DELETE_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat menghapus balasan karena tipe data tidak sesuai'),
 };
 
 export default DomainErrorTranslator;

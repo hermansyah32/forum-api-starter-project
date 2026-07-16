@@ -879,6 +879,96 @@ describe('HTTP server', () => {
     });
   });
 
+  describe('when DELETE /threads/:threadId/comments/:commentId/replies/:replyId', () => {
+    it('should response 401 when request do not have access token', async () => {
+      // Arrange
+      const app = await createServer(container);
+
+      // Action
+      const response = await request(app).delete('/threads/thread-123/comments/comment-123/replies/reply-123');
+
+      // Assert
+      expect(response.status).toEqual(401);
+      expect(response.body.status).toEqual('fail');
+      expect(response.body.message).toEqual('Missing authentication');
+    });
+
+    it('should response 404 when reply is not found', async () => {
+      // Arrange
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', owner: 'user-123' });
+      await CommentsTableTestHelper.addComment({ id: 'comment-123', threadId: 'thread-123', owner: 'user-123' });
+
+      const app = await createServer(container);
+      const tokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const accessToken = await tokenManager.createAccessToken({ id: 'user-123', username: 'dicoding' });
+
+      // Action
+      const response = await request(app)
+        .delete('/threads/thread-123/comments/comment-123/replies/reply-xxx')
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      // Assert
+      expect(response.status).toEqual(404);
+      expect(response.body.status).toEqual('fail');
+      expect(response.body.message).toEqual('balasan tidak ditemukan');
+    });
+
+    it('should response 403 when user is not the owner of reply', async () => {
+      // Arrange
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+      await UsersTableTestHelper.addUser({ id: 'user-456', username: 'johndoe' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', owner: 'user-123' });
+      await CommentsTableTestHelper.addComment({ id: 'comment-123', threadId: 'thread-123', owner: 'user-123' });
+      await RepliesTableTestHelper.addReply({
+        id: 'reply-123',
+        owner: 'user-456',
+        threadId: 'thread-123',
+        commentId: 'comment-123',
+      });
+
+      const app = await createServer(container);
+      const tokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const accessToken = await tokenManager.createAccessToken({ id: 'user-123', username: 'dicoding' });
+
+      // Action
+      const response = await request(app)
+        .delete('/threads/thread-123/comments/comment-123/replies/reply-123')
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      // Assert
+      expect(response.status).toEqual(403);
+      expect(response.body.status).toEqual('fail');
+      expect(response.body.message).toEqual('anda tidak memiliki hak akses untuk menghapus balasan ini');
+    });
+
+    it('should response 200 when reply deleted successfully', async () => {
+      // Arrange
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', owner: 'user-123' });
+      await CommentsTableTestHelper.addComment({ id: 'comment-123', threadId: 'thread-123', owner: 'user-123' });
+      await RepliesTableTestHelper.addReply({
+        id: 'reply-123',
+        owner: 'user-123',
+        threadId: 'thread-123',
+        commentId: 'comment-123',
+      });
+
+      const app = await createServer(container);
+      const tokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const accessToken = await tokenManager.createAccessToken({ id: 'user-123', username: 'dicoding' });
+
+      // Action
+      const response = await request(app)
+        .delete('/threads/thread-123/comments/comment-123/replies/reply-123')
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      // Assert
+      expect(response.status).toEqual(200);
+      expect(response.body.status).toEqual('success');
+    });
+  });
+
   it('should handle server error correctly', async () => {
     // Arrange
     const requestPayload = {

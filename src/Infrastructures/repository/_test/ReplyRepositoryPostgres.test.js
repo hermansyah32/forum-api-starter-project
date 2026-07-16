@@ -94,4 +94,70 @@ describe('ReplyRepositoryPostgres', () => {
       expect(replies[1].date).toBeDefined();
     });
   });
+
+  describe('findReplyById function', () => {
+    it('should return null when reply not found', async () => {
+      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {});
+      const reply = await replyRepositoryPostgres.findReplyById('reply-xxx');
+      expect(reply).toBeNull();
+    });
+
+    it('should return reply correctly', async () => {
+      // Arrange
+      await UsersTableTestHelper.addUser({ id: 'user-123' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', owner: 'user-123' });
+      await CommentsTableTestHelper.addComment({ id: 'comment-123', threadId: 'thread-123', owner: 'user-123' });
+      await RepliesTableTestHelper.addReply({
+        id: 'reply-123',
+        owner: 'user-123',
+        threadId: 'thread-123',
+        commentId: 'comment-123',
+        content: 'reply content',
+      });
+
+      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {});
+
+      // Action
+      const reply = await replyRepositoryPostgres.findReplyById('reply-123');
+
+      // Assert
+      expect(reply).toStrictEqual({
+        id: 'reply-123',
+        owner: 'user-123',
+        commentId: 'comment-123',
+        threadId: 'thread-123',
+        content: 'reply content',
+      });
+    });
+  });
+
+  describe('deleteReplyById function', () => {
+    it('should throw error when reply not found', async () => {
+      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {});
+      await expect(replyRepositoryPostgres.deleteReplyById('reply-xxx')).rejects.toThrowError('REPLY_REPOSITORY.REPLY_NOT_FOUND');
+    });
+
+    it('should delete reply correctly (update is_delete to true)', async () => {
+      // Arrange
+      await UsersTableTestHelper.addUser({ id: 'user-123' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', owner: 'user-123' });
+      await CommentsTableTestHelper.addComment({ id: 'comment-123', threadId: 'thread-123', owner: 'user-123' });
+      await RepliesTableTestHelper.addReply({
+        id: 'reply-123',
+        owner: 'user-123',
+        threadId: 'thread-123',
+        commentId: 'comment-123',
+        content: 'reply content',
+      });
+
+      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, {});
+
+      // Action
+      await replyRepositoryPostgres.deleteReplyById('reply-123');
+
+      // Assert
+      const replies = await RepliesTableTestHelper.findReplyById('reply-123');
+      expect(replies[0].is_delete).toEqual(true);
+    });
+  });
 });

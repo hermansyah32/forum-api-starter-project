@@ -8,6 +8,7 @@ const createThreadsRouter = (handler, authMiddleware) => {
   router.delete('/:threadId/comments/:commentId', authMiddleware, handler.deleteCommentHandler);
   router.get('/:threadId', handler.getThreadHandler);
   router.post('/:threadId/comments/:commentId/replies', authMiddleware, handler.postReplyHandler);
+  router.delete('/:threadId/comments/:commentId/replies/:replyId', authMiddleware, handler.deleteReplyHandler);
 
   return router;
 };

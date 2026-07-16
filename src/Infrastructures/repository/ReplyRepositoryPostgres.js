@@ -48,6 +48,42 @@ class ReplyRepositoryPostgres extends ReplyRepository {
       is_delete: row.is_delete,
     }));
   }
+
+  async findReplyById(replyId) {
+    const query = {
+      text: 'SELECT id, owner, comment_id, thread_id, content FROM replies WHERE id = $1',
+      values: [replyId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rows.length) {
+      return null;
+    }
+
+    const data = result.rows[0];
+
+    return {
+      id: data.id,
+      owner: data.owner,
+      commentId: data.comment_id,
+      threadId: data.thread_id,
+      content: data.content,
+    };
+  }
+
+  async deleteReplyById(replyId) {
+    const query = {
+      text: 'UPDATE replies SET is_delete = true WHERE id = $1 RETURNING id',
+      values: [replyId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rows.length) {
+      throw new Error('REPLY_REPOSITORY.REPLY_NOT_FOUND');
+    }
+  }
 }
 
 export default ReplyRepositoryPostgres;

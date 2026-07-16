@@ -34,6 +34,7 @@ import AddCommentUseCase from '../Applications/use_case/AddCommentUseCase.js';
 import DeleteCommentUseCase from '../Applications/use_case/DeleteCommentUseCase.js';
 import GetThreadUseCase from '../Applications/use_case/GetThreadUseCase.js';
 import AddReplyUseCase from '../Applications/use_case/AddReplyUseCase.js';
+import DeleteReplyUseCase from '../Applications/use_case/DeleteReplyUseCase.js';
 
 // creating container
 const container = createContainer();
@@ -276,6 +277,27 @@ container.register([
   {
     key: AddReplyUseCase.name,
     Class: AddReplyUseCase,
+    parameter: {
+      injectType: 'destructuring',
+      dependencies: [
+        {
+          name: 'replyRepository',
+          internal: ReplyRepository.name,
+        },
+        {
+          name: 'commentRepository',
+          internal: CommentRepository.name,
+        },
+        {
+          name: 'threadRepository',
+          internal: ThreadRepository.name,
+        }
+      ]
+    }
+  },
+  {
+    key: DeleteReplyUseCase.name,
+    Class: DeleteReplyUseCase,
     parameter: {
       injectType: 'destructuring',
       dependencies: [
