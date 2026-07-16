@@ -2,6 +2,7 @@ import AddThreadUseCase from '../../../../Applications/use_case/AddThreadUseCase
 import AddCommentUseCase from '../../../../Applications/use_case/AddCommentUseCase.js';
 import DeleteCommentUseCase from '../../../../Applications/use_case/DeleteCommentUseCase.js';
 import GetThreadUseCase from '../../../../Applications/use_case/GetThreadUseCase.js';
+import AddReplyUseCase from '../../../../Applications/use_case/AddReplyUseCase.js';
 
 class ThreadsHandler {
   constructor(container) {
@@ -11,6 +12,7 @@ class ThreadsHandler {
     this.postCommentHandler = this.postCommentHandler.bind(this);
     this.deleteCommentHandler = this.deleteCommentHandler.bind(this);
     this.getThreadHandler = this.getThreadHandler.bind(this);
+    this.postReplyHandler = this.postReplyHandler.bind(this);
   }
 
   async postThreadHandler(req, res, next) {
@@ -86,6 +88,29 @@ class ThreadsHandler {
         status: 'success',
         data: {
           thread,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async postReplyHandler(req, res, next) {
+    try {
+      const { threadId, commentId } = req.params;
+      const addReplyUseCase = this._container.getInstance(AddReplyUseCase.name);
+      const payload = {
+        ...req.body,
+        threadId,
+        commentId,
+        owner: req.auth.id,
+      };
+      const addedReply = await addReplyUseCase.execute(payload);
+
+      res.status(201).json({
+        status: 'success',
+        data: {
+          addedReply,
         },
       });
     } catch (error) {

@@ -17,6 +17,8 @@ import ThreadRepository from '../Domains/threads/ThreadRepository.js';
 import ThreadRepositoryPostgres from './repository/ThreadRepositoryPostgres.js';
 import CommentRepository from '../Domains/comments/CommentRepository.js';
 import CommentRepositoryPostgres from './repository/CommentRepositoryPostgres.js';
+import ReplyRepository from '../Domains/replies/ReplyRepository.js';
+import ReplyRepositoryPostgres from './repository/ReplyRepositoryPostgres.js';
 
 // use case
 import AddUserUseCase from '../Applications/use_case/AddUserUseCase.js';
@@ -31,6 +33,7 @@ import AddThreadUseCase from '../Applications/use_case/AddThreadUseCase.js';
 import AddCommentUseCase from '../Applications/use_case/AddCommentUseCase.js';
 import DeleteCommentUseCase from '../Applications/use_case/DeleteCommentUseCase.js';
 import GetThreadUseCase from '../Applications/use_case/GetThreadUseCase.js';
+import AddReplyUseCase from '../Applications/use_case/AddReplyUseCase.js';
 
 // creating container
 const container = createContainer();
@@ -109,6 +112,20 @@ container.register([
         {
           concrete: nanoid
         }
+      ]
+    }
+  },
+  {
+    key: ReplyRepository.name,
+    Class: ReplyRepositoryPostgres,
+    parameter: {
+      dependencies: [
+        {
+          concrete: pool,
+        },
+        {
+          concrete: nanoid,
+        },
       ]
     }
   }
@@ -241,6 +258,27 @@ container.register([
     parameter: {
       injectType: 'destructuring',
       dependencies: [
+        {
+          name: 'commentRepository',
+          internal: CommentRepository.name,
+        },
+        {
+          name: 'threadRepository',
+          internal: ThreadRepository.name,
+        }
+      ]
+    }
+  },
+  {
+    key: AddReplyUseCase.name,
+    Class: AddReplyUseCase,
+    parameter: {
+      injectType: 'destructuring',
+      dependencies: [
+        {
+          name: 'replyRepository',
+          internal: ReplyRepository.name,
+        },
         {
           name: 'commentRepository',
           internal: CommentRepository.name,
