@@ -1,6 +1,5 @@
 import { vi } from 'vitest';
 import bcrypt from 'bcrypt';
-import AuthenticationError from '../../../Commons/exceptions/AuthenticationError.js';
 import BcryptPasswordHash from '../BcryptPasswordHash.js';
 
 describe('BcryptPasswordHash', () => {
@@ -21,17 +20,17 @@ describe('BcryptPasswordHash', () => {
   });
 
   describe('comparePassword function', () => {
-    it('should throw AuthenticationError if password not match', async () => {
+    it('should throw VERIFY_AUTHENTICATION_EXIST.INVALID_CREDENTIALS if password not match', async () => {
       // Arrange
       const bcryptPasswordHash = new BcryptPasswordHash(bcrypt);
 
       // Act & Assert
       await expect(bcryptPasswordHash.comparePassword('plain_password', 'encrypted_password'))
         .rejects
-        .toThrow(AuthenticationError);
+        .toThrow('VERIFY_AUTHENTICATION_EXIST.INVALID_CREDENTIALS');
     });
 
-    it('should not return AuthenticationError if password match', async () => {
+    it('should not return VERIFY_AUTHENTICATION_EXIST.INVALID_CREDENTIALS if password match', async () => {
       // Arrange
       const bcryptPasswordHash = new BcryptPasswordHash(bcrypt);
       const plainPassword = 'secret';
@@ -39,7 +38,7 @@ describe('BcryptPasswordHash', () => {
 
       // Act & Assert
       await expect(bcryptPasswordHash.comparePassword(plainPassword, encryptedPassword))
-        .resolves.not.toThrow(AuthenticationError);
+        .resolves.not.toThrow('VERIFY_AUTHENTICATION_EXIST.INVALID_CREDENTIALS');
     });
   });
 });

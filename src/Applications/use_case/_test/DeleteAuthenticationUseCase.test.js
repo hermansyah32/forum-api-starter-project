@@ -34,7 +34,7 @@ describe('DeleteAuthenticationUseCase', () => {
     };
     const mockAuthenticationRepository = new AuthenticationRepository();
     mockAuthenticationRepository.checkAvailabilityToken = vi.fn()
-      .mockImplementation(() => Promise.resolve());
+      .mockImplementation(() => Promise.resolve(true));
     mockAuthenticationRepository.deleteToken = vi.fn()
       .mockImplementation(() => Promise.resolve());
 
@@ -50,5 +50,26 @@ describe('DeleteAuthenticationUseCase', () => {
       .toHaveBeenCalledWith(useCasePayload.refreshToken);
     expect(mockAuthenticationRepository.deleteToken)
       .toHaveBeenCalledWith(useCasePayload.refreshToken);
+  });
+
+  it('should throw error when refresh token not found in database', async () => {
+    // Arrange
+    const useCasePayload = {
+      refreshToken: 'refreshToken',
+    };
+    const mockAuthenticationRepository = new AuthenticationRepository();
+    mockAuthenticationRepository.checkAvailabilityToken = vi.fn()
+      .mockImplementation(() => Promise.resolve(null));
+    mockAuthenticationRepository.deleteToken = vi.fn()
+      .mockImplementation(() => Promise.resolve());
+
+    const deleteAuthenticationUseCase = new DeleteAuthenticationUseCase({
+      authenticationRepository: mockAuthenticationRepository,
+    });
+
+    // Action & Assert
+    await expect(deleteAuthenticationUseCase.execute(useCasePayload))
+      .rejects
+      .toThrow('VERIFY_AUTHENTICATION_EXIST.REFRESH_TOKEN_NOT_FOUND');
   });
 });

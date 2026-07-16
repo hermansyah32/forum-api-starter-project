@@ -65,4 +65,60 @@ describe('GetAuthenticationUseCase', () => {
     expect(mockAuthenticationRepository.addToken)
       .toBeCalledWith(mockedAuthentication.refreshToken);
   });
+
+  it('should throw error when username is not found', async () => {
+    // Arrange
+    const useCasePayload = {
+      username: 'dicoding',
+      password: 'secret',
+    };
+    const mockUserRepository = new UserRepository();
+    const mockPasswordHash = new PasswordHash();
+    const mockAuthenticationRepository = new AuthenticationRepository();
+    const mockAuthenticationTokenManager = new AuthenticationTokenManager();
+
+    mockUserRepository.getPasswordByUsername = vi.fn()
+      .mockImplementation(() => Promise.reject(new Error('USER_REPOSITORY.USERNAME_NOT_FOUND')));
+
+    const loginUserUseCase = new LoginUserUseCase({
+      userRepository: mockUserRepository,
+      authenticationRepository: mockAuthenticationRepository,
+      authenticationTokenManager: mockAuthenticationTokenManager,
+      passwordHash: mockPasswordHash,
+    });
+
+    // Action & Assert
+    await expect(loginUserUseCase.execute(useCasePayload))
+      .rejects
+      .toThrow('USER_REPOSITORY.USERNAME_NOT_FOUND');
+  });
+
+  it('should throw error when password is wrong', async () => {
+    // Arrange
+    const useCasePayload = {
+      username: 'dicoding',
+      password: 'secret',
+    };
+    const mockUserRepository = new UserRepository();
+    const mockPasswordHash = new PasswordHash();
+    const mockAuthenticationRepository = new AuthenticationRepository();
+    const mockAuthenticationTokenManager = new AuthenticationTokenManager();
+
+    mockUserRepository.getPasswordByUsername = vi.fn()
+      .mockImplementation(() => Promise.resolve('encrypted_password'));
+    mockPasswordHash.comparePassword = vi.fn()
+      .mockImplementation(() => Promise.reject(new Error('PASSWORD_HASH.PASSWORD_NOT_MATCH')));
+
+    const loginUserUseCase = new LoginUserUseCase({
+      userRepository: mockUserRepository,
+      authenticationRepository: mockAuthenticationRepository,
+      authenticationTokenManager: mockAuthenticationTokenManager,
+      passwordHash: mockPasswordHash,
+    });
+
+    // Action & Assert
+    await expect(loginUserUseCase.execute(useCasePayload))
+      .rejects
+      .toThrow('PASSWORD_HASH.PASSWORD_NOT_MATCH');
+  });
 });

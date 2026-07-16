@@ -18,13 +18,13 @@ class CommentRepositoryPostgres extends CommentRepository {
     };
 
     const result = await this._pool.query(query);
-    const data = result.rows[0] || {};
+    const data = result.rows[0];
 
     return new AddedComment(
       {
-        id: data.id,
-        owner: data.owner,
-        content: data.content,
+        id: data?.id,
+        owner: data?.owner,
+        content: data?.content,
       }
     );
   }
@@ -41,15 +41,13 @@ class CommentRepositoryPostgres extends CommentRepository {
       return null;
     }
 
-    /* eslint-disable-next-line camelcase */
-    const { id, owner, thread_id, content } = result.rows[0] || {};
+    const data = result.rows[0];
 
     return {
-      id,
-      /* eslint-disable-next-line camelcase */
-      threadId: thread_id,
-      owner,
-      content,
+      id: data.id,
+      threadId: data.thread_id,
+      owner: data.owner,
+      content: data.content,
     };
   }
 

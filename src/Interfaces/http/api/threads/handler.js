@@ -16,7 +16,7 @@ class ThreadsHandler {
       const addThreadUseCase = this._container.getInstance(AddThreadUseCase.name);
       const payload = {
         ...req.body,
-        owner: req.auth.id || null,
+        owner: req.auth.id,
       };
       const addedThread = await addThreadUseCase.execute(payload);
 
@@ -38,7 +38,7 @@ class ThreadsHandler {
       const payload = {
         ...req.body,
         threadId: threadId,
-        owner: req.auth.id || null,
+        owner: req.auth.id,
       };
       const addedComment = await addCommentUseCase.execute(payload);
 
@@ -56,7 +56,7 @@ class ThreadsHandler {
   async deleteCommentHandler(req, res, next) {
     try {
       const { threadId, commentId } = req.params;
-      const owner = req.auth.id || null;
+      const owner = req.auth.id;
       const deletePayload = {
         owner,
         threadId: threadId,

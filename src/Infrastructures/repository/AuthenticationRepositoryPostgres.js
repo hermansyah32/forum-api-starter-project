@@ -1,4 +1,3 @@
-import InvariantError from '../../Commons/exceptions/InvariantError.js';
 import AuthenticationRepository from '../../Domains/authentications/AuthenticationRepository.js';
 
 class AuthenticationRepositoryPostgres extends AuthenticationRepository {
@@ -25,8 +24,9 @@ class AuthenticationRepositoryPostgres extends AuthenticationRepository {
     const result = await this._pool.query(query);
 
     if (result.rows.length === 0) {
-      throw new InvariantError('refresh token tidak ditemukan di database');
+      return null;
     }
+    return true;
   }
 
   async deleteToken(token) {

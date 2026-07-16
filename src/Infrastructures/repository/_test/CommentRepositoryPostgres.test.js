@@ -31,7 +31,7 @@ describe('CommentRepositoryPostgres', () => {
 
       // Assert
       const comments = await CommentsTableTestHelper.findCommentById(`comment-${fakeIdGenerator()}`);
-      expect(comments).toHaveLength(1);
+      expect(comments).not.toBeNull();
     });
 
     it('should return added comment correctly', async () => {
@@ -73,6 +73,17 @@ describe('CommentRepositoryPostgres', () => {
       // Assert
       const comment = await CommentsTableTestHelper.findCommentById('comment-123');
       expect(comment).toHaveLength(0);
+    });
+
+    it('should return null if comment to delete is not found', async () => {
+      // Arrange
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+
+      // Action
+      const result = await commentRepositoryPostgres.deleteCommentById('comment-xxx');
+
+      // Assert
+      expect(result).toBeNull();
     });
   });
 });

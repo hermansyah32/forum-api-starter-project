@@ -12,7 +12,10 @@ class RefreshAuthenticationUseCase {
     const { refreshToken } = useCasePayload;
 
     await this._authenticationTokenManager.verifyRefreshToken(refreshToken);
-    await this._authenticationRepository.checkAvailabilityToken(refreshToken);
+    const result = await this._authenticationRepository.checkAvailabilityToken(refreshToken);
+    if (!result) {
+      throw new Error('VERIFY_AUTHENTICATION_EXIST.REFRESH_TOKEN_NOT_FOUND');
+    }
 
     const { username, id } = await this._authenticationTokenManager.decodePayload(refreshToken);
 

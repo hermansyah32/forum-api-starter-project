@@ -1,7 +1,7 @@
-import InvariantError from '../../../Commons/exceptions/InvariantError.js';
 import AuthenticationsTableTestHelper from '../../../../tests/AuthenticationsTableTestHelper.js';
 import pool from '../../database/postgres/pool.js';
 import AuthenticationRepositoryPostgres from '../AuthenticationRepositoryPostgres.js';
+import { expect } from 'vitest';
 
 describe('AuthenticationRepository postgres', () => {
   afterEach(async () => {
@@ -29,25 +29,29 @@ describe('AuthenticationRepository postgres', () => {
   });
 
   describe('checkAvailabilityToken function', () => {
-    it('should throw InvariantError if token not available', async () => {
+    it('should return null if token not available', async () => {
       // Arrange
       const authenticationRepository = new AuthenticationRepositoryPostgres(pool);
       const token = 'token';
 
-      // Action & Assert
-      await expect(authenticationRepository.checkAvailabilityToken(token))
-        .rejects.toThrow(InvariantError);
+      // Action
+      const result = await authenticationRepository.checkAvailabilityToken(token);
+
+      // Assert
+      expect(result).toBeNull();
     });
 
-    it('should not throw InvariantError if token available', async () => {
+    it('should not return null if token available', async () => {
       // Arrange
       const authenticationRepository = new AuthenticationRepositoryPostgres(pool);
       const token = 'token';
       await AuthenticationsTableTestHelper.addToken(token);
 
-      // Action & Assert
-      await expect(authenticationRepository.checkAvailabilityToken(token))
-        .resolves.not.toThrow(InvariantError);
+      // Action
+      const result = await authenticationRepository.checkAvailabilityToken(token);
+
+      // Assert
+      expect(result).not.toBeNull();
     });
   });
 

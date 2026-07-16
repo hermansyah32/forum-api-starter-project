@@ -82,4 +82,39 @@ describe('ThreadRepositoryPostgres', () => {
       expect(isExist).toBe(false);
     });
   });
+
+  describe('findThreadById function', () => {
+    it('should return null when thread not found', async () => {
+      // Arrange
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
+
+      // Action
+      const thread = await threadRepositoryPostgres.findThreadById('thread-xxx');
+
+      // Assert
+      expect(thread).toBeNull();
+    });
+
+    it('should return thread details correctly when thread is found', async () => {
+      // Arrange
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
+      await ThreadsTableTestHelper.addThread({
+        id: 'thread-123',
+        title: 'a title',
+        body: 'a body',
+        owner: 'user-123',
+      });
+
+      // Action
+      const thread = await threadRepositoryPostgres.findThreadById('thread-123');
+
+      // Assert
+      expect(thread).toStrictEqual({
+        id: 'thread-123',
+        title: 'a title',
+        body: 'a body',
+        owner: 'user-123',
+      });
+    });
+  });
 });

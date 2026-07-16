@@ -8,7 +8,10 @@ class LogoutUserUseCase {
   async execute(useCasePayload) {
     this._validatePayload(useCasePayload);
     const { refreshToken } = useCasePayload;
-    await this._authenticationRepository.checkAvailabilityToken(refreshToken);
+    const result = await this._authenticationRepository.checkAvailabilityToken(refreshToken);
+    if (!result) {
+      throw new Error('VERIFY_AUTHENTICATION_EXIST.REFRESH_TOKEN_NOT_FOUND');
+    }
     await this._authenticationRepository.deleteToken(refreshToken);
   }
 

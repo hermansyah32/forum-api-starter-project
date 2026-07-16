@@ -44,4 +44,86 @@ describe('DeleteCommentUseCase', () => {
     expect(mockCommentRepository.findCommentById).toBeCalledWith(mockDeleteCommentPayload.commentId);
     expect(mockCommentRepository.deleteCommentById).toBeCalledWith(mockDeleteCommentPayload.commentId);
   });
+
+  it('should throw error when thread does not exist', async () => {
+    // Arrange
+    const useCasePayload = {
+      owner: 'user-123',
+      threadId: 'thread-123',
+      commentId: 'comment-123',
+    };
+
+    const mockCommentRepository = new CommentRepository();
+    const mockThreadRepository = new ThreadRepository();
+    mockThreadRepository.verifyThreadExist = vi.fn()
+      .mockImplementation(() => Promise.resolve(false));
+
+    const deleteCommentUseCase = new DeleteCommentUseCase({
+      commentRepository: mockCommentRepository,
+      threadRepository: mockThreadRepository,
+    });
+
+    // Action and Assert
+    await expect(deleteCommentUseCase.execute(useCasePayload))
+      .rejects
+      .toThrow('VERIFY_THREAD_EXIST.NOT_FOUND');
+  });
+
+  it('should throw error when comment does not exist', async () => {
+    // Arrange
+    const useCasePayload = {
+      owner: 'user-123',
+      threadId: 'thread-123',
+      commentId: 'comment-123',
+    };
+
+    const mockCommentRepository = new CommentRepository();
+    mockCommentRepository.findCommentById = vi.fn()
+      .mockImplementation(() => Promise.resolve(null));
+    const mockThreadRepository = new ThreadRepository();
+    mockThreadRepository.verifyThreadExist = vi.fn()
+      .mockImplementation(() => Promise.resolve(true));
+
+    const deleteCommentUseCase = new DeleteCommentUseCase({
+      commentRepository: mockCommentRepository,
+      threadRepository: mockThreadRepository,
+    });
+
+    // Action and Assert
+    await expect(deleteCommentUseCase.execute(useCasePayload))
+      .rejects
+      .toThrow('VERIFY_COMMENT_EXISTS.NOT_FOUND');
+  });
+
+  it('should throw error when user is not authorized to delete the comment', async () => {
+    // Arrange
+    const useCasePayload = {
+      owner: 'user-123',
+      threadId: 'thread-123',
+      commentId: 'comment-123',
+    };
+
+    const mockAddedComment = new AddedComment({
+      id: useCasePayload.commentId,
+      content: 'some comment',
+      owner: 'user-456', // different owner
+    });
+
+    const mockCommentRepository = new CommentRepository();
+    mockCommentRepository.findCommentById = vi.fn()
+      .mockImplementation(() => Promise.resolve(mockAddedComment));
+    const mockThreadRepository = new ThreadRepository();
+    mockThreadRepository.verifyThreadExist = vi.fn()
+      .mockImplementation(() => Promise.resolve(true));
+
+    const deleteCommentUseCase = new DeleteCommentUseCase({
+      commentRepository: mockCommentRepository,
+      threadRepository: mockThreadRepository,
+    });
+
+    // Action and Assert
+    await expect(deleteCommentUseCase.execute(useCasePayload))
+      .rejects
+      .toThrow('DELETE_COMMENT.FORBIDDEN');
+  });
 });

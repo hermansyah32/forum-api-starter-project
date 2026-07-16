@@ -37,7 +37,7 @@ describe('RefreshAuthenticationUseCase', () => {
     const mockAuthenticationTokenManager = new AuthenticationTokenManager();
     // Mocking
     mockAuthenticationRepository.checkAvailabilityToken = vi.fn()
-      .mockImplementation(() => Promise.resolve());
+      .mockImplementation(() => Promise.resolve(true));
     mockAuthenticationTokenManager.verifyRefreshToken = vi.fn()
       .mockImplementation(() => Promise.resolve());
     mockAuthenticationTokenManager.decodePayload = vi.fn()
@@ -63,5 +63,51 @@ describe('RefreshAuthenticationUseCase', () => {
     expect(mockAuthenticationTokenManager.createAccessToken)
       .toBeCalledWith({ username: 'dicoding', id: 'user-123' });
     expect(accessToken).toEqual('some_new_access_token');
+  });
+
+  it('should throw error when refresh token verification fails', async () => {
+    // Arrange
+    const useCasePayload = {
+      refreshToken: 'some_refresh_token',
+    };
+    const mockAuthenticationRepository = new AuthenticationRepository();
+    const mockAuthenticationTokenManager = new AuthenticationTokenManager();
+
+    mockAuthenticationTokenManager.verifyRefreshToken = vi.fn()
+      .mockImplementation(() => Promise.reject(new Error('VERIFY_AUTHENTICATION_EXIST.INVALID_REFRESH_TOKEN')));
+
+    const refreshAuthenticationUseCase = new RefreshAuthenticationUseCase({
+      authenticationRepository: mockAuthenticationRepository,
+      authenticationTokenManager: mockAuthenticationTokenManager,
+    });
+
+    // Action & Assert
+    await expect(refreshAuthenticationUseCase.execute(useCasePayload))
+      .rejects
+      .toThrow('VERIFY_AUTHENTICATION_EXIST.INVALID_REFRESH_TOKEN');
+  });
+
+  it('should throw error when refresh token not found in database', async () => {
+    // Arrange
+    const useCasePayload = {
+      refreshToken: 'some_refresh_token',
+    };
+    const mockAuthenticationRepository = new AuthenticationRepository();
+    const mockAuthenticationTokenManager = new AuthenticationTokenManager();
+
+    mockAuthenticationTokenManager.verifyRefreshToken = vi.fn()
+      .mockImplementation(() => Promise.resolve());
+    mockAuthenticationRepository.checkAvailabilityToken = vi.fn()
+      .mockImplementation(() => Promise.reject(null));
+
+    const refreshAuthenticationUseCase = new RefreshAuthenticationUseCase({
+      authenticationRepository: mockAuthenticationRepository,
+      authenticationTokenManager: mockAuthenticationTokenManager,
+    });
+
+    // Action & Assert
+    await expect(refreshAuthenticationUseCase.execute(useCasePayload))
+      .rejects
+      .toThrow('AUTHENTICATION_REPOSITORY.TOKEN_NOT_FOUND');
   });
 });
