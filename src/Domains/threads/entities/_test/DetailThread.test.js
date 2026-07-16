@@ -15,6 +15,14 @@ describe('DetailThread entity', () => {
           username: 'johndoe',
           content: 'some content',
           date: '2021-08-08T07:26:21.497Z',
+          replies: [
+            {
+              id: 'reply-123',
+              username: 'dicoding',
+              content: 'some reply',
+              date: '2021-08-08T07:28:21.497Z',
+            },
+          ],
         },
       ],
     };
@@ -93,6 +101,7 @@ describe('DetailThread entity', () => {
           username: 123,
           content: 'some content',
           date: true,
+          replies: 'invalid replies type',
         },
       ],
     };
@@ -100,5 +109,64 @@ describe('DetailThread entity', () => {
     // Action & Assert
     expect(() => new DetailThread(payload))
       .toThrowError('DETAIL_THREAD.COMMENT_NOT_MEET_DATA_TYPE_SPECIFICATION');
+  });
+
+  it('should throw error when a reply does not contain needed properties', () => {
+    // Arrange
+    const payload = {
+      id: 'thread-123',
+      title: 'some title',
+      body: 'some body',
+      username: 'dicoding',
+      date: '2021-08-08T07:22:33.555Z',
+      comments: [
+        {
+          id: 'comment-123',
+          username: 'johndoe',
+          content: 'some content',
+          date: '2021-08-08T07:26:21.497Z',
+          replies: [
+            {
+              id: 'reply-123',
+            },
+          ],
+        },
+      ],
+    };
+
+    // Action & Assert
+    expect(() => new DetailThread(payload))
+      .toThrowError('DETAIL_THREAD.REPLY_NOT_CONTAIN_NEEDED_PROPERTY');
+  });
+
+  it('should throw error when a reply does not meet data type specification', () => {
+    // Arrange
+    const payload = {
+      id: 'thread-123',
+      title: 'some title',
+      body: 'some body',
+      username: 'dicoding',
+      date: '2021-08-08T07:22:33.555Z',
+      comments: [
+        {
+          id: 'comment-123',
+          username: 'johndoe',
+          content: 'some content',
+          date: '2021-08-08T07:26:21.497Z',
+          replies: [
+            {
+              id: 'reply-123',
+              username: 123,
+              content: 'some reply content',
+              date: true,
+            },
+          ],
+        },
+      ],
+    };
+
+    // Action & Assert
+    expect(() => new DetailThread(payload))
+      .toThrowError('DETAIL_THREAD.REPLY_NOT_MEET_DATA_TYPE_SPECIFICATION');
   });
 });

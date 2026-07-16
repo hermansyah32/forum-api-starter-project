@@ -3,6 +3,7 @@ import { vi } from 'vitest';
 import DetailThread from '../../../Domains/threads/entities/DetailThread.js';
 import ThreadRepository from '../../../Domains/threads/ThreadRepository.js';
 import CommentRepository from '../../../Domains/comments/CommentRepository.js';
+import ReplyRepository from '../../../Domains/replies/ReplyRepository.js';
 import GetThreadUseCase from '../GetThreadUseCase.js';
 
 describe('GetThreadUseCase', () => {
@@ -34,8 +35,28 @@ describe('GetThreadUseCase', () => {
       },
     ];
 
+    const mockReplies = [
+      {
+        id: 'reply-1',
+        commentId: 'comment-1',
+        username: 'user-a',
+        content: 'reply content 1',
+        date: '2021-08-08T07:29:21.497Z',
+        is_delete: false,
+      },
+      {
+        id: 'reply-2',
+        commentId: 'comment-1',
+        username: 'user-b',
+        content: 'reply content 2',
+        date: '2021-08-08T07:30:21.497Z',
+        is_delete: true,
+      },
+    ];
+
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
+    const mockReplyRepository = new ReplyRepository();
 
     mockThreadRepository.verifyThreadExist = vi.fn()
       .mockImplementation(() => Promise.resolve(true));
@@ -43,10 +64,13 @@ describe('GetThreadUseCase', () => {
       .mockImplementation(() => Promise.resolve(mockThread));
     mockCommentRepository.getCommentsByThreadId = vi.fn()
       .mockImplementation(() => Promise.resolve(mockComments));
+    mockReplyRepository.getRepliesByThreadId = vi.fn()
+      .mockImplementation(() => Promise.resolve(mockReplies));
 
     const getThreadUseCase = new GetThreadUseCase({
       commentRepository: mockCommentRepository,
       threadRepository: mockThreadRepository,
+      replyRepository: mockReplyRepository,
     });
 
     // Action
@@ -65,12 +89,27 @@ describe('GetThreadUseCase', () => {
           username: 'johndoe',
           date: '2021-08-08T07:26:21.497Z',
           content: 'content 1',
+          replies: [
+            {
+              id: 'reply-1',
+              content: 'reply content 1',
+              date: '2021-08-08T07:29:21.497Z',
+              username: 'user-a',
+            },
+            {
+              id: 'reply-2',
+              content: '**balasan telah dihapus**',
+              date: '2021-08-08T07:30:21.497Z',
+              username: 'user-b',
+            },
+          ],
         },
         {
           id: 'comment-2',
           username: 'dicoding',
           date: '2021-08-08T07:28:21.497Z',
           content: '**komentar telah dihapus**',
+          replies: [],
         },
       ],
     }));
@@ -78,6 +117,7 @@ describe('GetThreadUseCase', () => {
     expect(mockThreadRepository.verifyThreadExist).toBeCalledWith(threadId);
     expect(mockThreadRepository.getThreadById).toBeCalledWith(threadId);
     expect(mockCommentRepository.getCommentsByThreadId).toBeCalledWith(threadId);
+    expect(mockReplyRepository.getRepliesByThreadId).toBeCalledWith(threadId);
   });
 
   it('should throw error when thread does not exist', async () => {
@@ -86,6 +126,7 @@ describe('GetThreadUseCase', () => {
 
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
+    const mockReplyRepository = new ReplyRepository();
 
     mockThreadRepository.verifyThreadExist = vi.fn()
       .mockImplementation(() => Promise.resolve(false));
@@ -93,6 +134,7 @@ describe('GetThreadUseCase', () => {
     const getThreadUseCase = new GetThreadUseCase({
       commentRepository: mockCommentRepository,
       threadRepository: mockThreadRepository,
+      replyRepository: mockReplyRepository,
     });
 
     // Action & Assert
@@ -106,6 +148,7 @@ describe('GetThreadUseCase', () => {
     const getThreadUseCase = new GetThreadUseCase({
       commentRepository: {},
       threadRepository: {},
+      replyRepository: {},
     });
 
     // Action & Assert
@@ -119,6 +162,7 @@ describe('GetThreadUseCase', () => {
     const getThreadUseCase = new GetThreadUseCase({
       commentRepository: {},
       threadRepository: {},
+      replyRepository: {},
     });
 
     // Action & Assert
@@ -132,6 +176,7 @@ describe('GetThreadUseCase', () => {
     const getThreadUseCase = new GetThreadUseCase({
       commentRepository: {},
       threadRepository: {},
+      replyRepository: {},
     });
 
     // Action & Assert
@@ -145,6 +190,7 @@ describe('GetThreadUseCase', () => {
     const getThreadUseCase = new GetThreadUseCase({
       commentRepository: {},
       threadRepository: {},
+      replyRepository: {},
     });
 
     // Action & Assert

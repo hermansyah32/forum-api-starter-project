@@ -26,6 +26,28 @@ class ReplyRepositoryPostgres extends ReplyRepository {
       owner: data?.owner,
     });
   }
+
+  async getRepliesByThreadId(threadId) {
+    const query = {
+      text: `SELECT replies.id, users.username, replies.content, replies.created_at AS date, replies.comment_id, replies.is_delete 
+             FROM replies 
+             INNER JOIN users ON replies.owner = users.id 
+             WHERE replies.thread_id = $1 
+             ORDER BY replies.created_at ASC`,
+      values: [threadId],
+    };
+
+    const result = await this._pool.query(query);
+
+    return result.rows.map((row) => ({
+      id: row.id,
+      username: row.username,
+      content: row.content,
+      date: row.date,
+      commentId: row.comment_id,
+      is_delete: row.is_delete,
+    }));
+  }
 }
 
 export default ReplyRepositoryPostgres;

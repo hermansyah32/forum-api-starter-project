@@ -1,9 +1,10 @@
 import DetailThread from '../../Domains/threads/entities/DetailThread.js';
 
 class GetThreadUseCase {
-  constructor({ commentRepository, threadRepository }) {
+  constructor({ commentRepository, threadRepository, replyRepository }) {
     this._commentRepository = commentRepository;
     this._threadRepository = threadRepository;
+    this._replyRepository = replyRepository;
   }
 
   async execute(useCasePayload) {
@@ -32,13 +33,26 @@ class GetThreadUseCase {
 
     const thread = await this._threadRepository.getThreadById(threadId);
     const comments = await this._commentRepository.getCommentsByThreadId(threadId);
+    const replies = await this._replyRepository.getRepliesByThreadId(threadId);
 
-    const mappedComments = comments.map((comment) => ({
-      id: comment.id,
-      username: comment.username,
-      date: comment.date,
-      content: comment.is_delete ? '**komentar telah dihapus**' : comment.content,
-    }));
+    const mappedComments = comments.map((comment) => {
+      const commentReplies = replies
+        .filter((reply) => reply.commentId === comment.id)
+        .map((reply) => ({
+          id: reply.id,
+          content: reply.is_delete ? '**balasan telah dihapus**' : reply.content,
+          date: reply.date,
+          username: reply.username,
+        }));
+
+      return {
+        id: comment.id,
+        username: comment.username,
+        date: comment.date,
+        content: comment.is_delete ? '**komentar telah dihapus**' : comment.content,
+        replies: commentReplies,
+      };
+    });
 
     return new DetailThread({
       ...thread,

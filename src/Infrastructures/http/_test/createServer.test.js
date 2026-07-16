@@ -655,11 +655,28 @@ describe('HTTP server', () => {
         isDelete: false,
       });
 
-      await CommentsTableTestHelper.addComment({
+       await CommentsTableTestHelper.addComment({
         id: commentId2,
         owner: 'user-456',
         threadId: threadId,
         content: 'Comment content 2',
+        isDelete: true,
+      });
+
+      await RepliesTableTestHelper.addReply({
+        id: 'reply-1',
+        owner: 'user-123',
+        threadId: threadId,
+        commentId: commentId1,
+        content: 'reply content 1',
+      });
+
+      await RepliesTableTestHelper.addReply({
+        id: 'reply-2',
+        owner: 'user-456',
+        threadId: threadId,
+        commentId: commentId1,
+        content: 'reply content 2',
         isDelete: true,
       });
 
@@ -685,11 +702,21 @@ describe('HTTP server', () => {
       expect(thread.comments[0].username).toEqual('johndoe');
       expect(thread.comments[0].content).toEqual('Comment content 1');
       expect(thread.comments[0].date).toBeDefined();
+      expect(thread.comments[0].replies).toHaveLength(2);
+      expect(thread.comments[0].replies[0].id).toEqual('reply-1');
+      expect(thread.comments[0].replies[0].username).toEqual('johndoe');
+      expect(thread.comments[0].replies[0].content).toEqual('reply content 1');
+      expect(thread.comments[0].replies[0].date).toBeDefined();
+      expect(thread.comments[0].replies[1].id).toEqual('reply-2');
+      expect(thread.comments[0].replies[1].username).toEqual('dicoding');
+      expect(thread.comments[0].replies[1].content).toEqual('**balasan telah dihapus**');
+      expect(thread.comments[0].replies[1].date).toBeDefined();
 
       expect(thread.comments[1].id).toEqual(commentId2);
       expect(thread.comments[1].username).toEqual('dicoding');
       expect(thread.comments[1].content).toEqual('**komentar telah dihapus**');
       expect(thread.comments[1].date).toBeDefined();
+      expect(thread.comments[1].replies).toHaveLength(0);
     });
 
     it('should response 404 when thread is not found', async () => {

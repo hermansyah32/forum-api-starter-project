@@ -31,7 +31,7 @@ class DetailThread {
     }
 
     for (const comment of comments) {
-      if (!comment.id || !comment.username || !comment.content || !comment.date) {
+      if (!comment.id || !comment.username || !comment.content || !comment.date || !comment.replies) {
         throw new Error('DETAIL_THREAD.COMMENT_NOT_CONTAIN_NEEDED_PROPERTY');
       }
 
@@ -39,9 +39,25 @@ class DetailThread {
         typeof comment.id !== 'string' ||
         typeof comment.username !== 'string' ||
         typeof comment.content !== 'string' ||
-        (typeof comment.date !== 'string' && !(comment.date instanceof Date))
+        (typeof comment.date !== 'string' && !(comment.date instanceof Date)) ||
+        !Array.isArray(comment.replies)
       ) {
         throw new Error('DETAIL_THREAD.COMMENT_NOT_MEET_DATA_TYPE_SPECIFICATION');
+      }
+
+      for (const reply of comment.replies) {
+        if (!reply.id || !reply.username || !reply.content || !reply.date) {
+          throw new Error('DETAIL_THREAD.REPLY_NOT_CONTAIN_NEEDED_PROPERTY');
+        }
+
+        if (
+          typeof reply.id !== 'string' ||
+          typeof reply.username !== 'string' ||
+          typeof reply.content !== 'string' ||
+          (typeof reply.date !== 'string' && !(reply.date instanceof Date))
+        ) {
+          throw new Error('DETAIL_THREAD.REPLY_NOT_MEET_DATA_TYPE_SPECIFICATION');
+        }
       }
     }
   }
