@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { vi } from 'vitest';
 import DetailThread from '../../../Domains/threads/entities/DetailThread.js';
 import ThreadRepository from '../../../Domains/threads/ThreadRepository.js';
@@ -22,14 +23,14 @@ describe('GetThreadUseCase', () => {
         username: 'johndoe',
         content: 'content 1',
         date: '2021-08-08T07:26:21.497Z',
-        isDelete: false,
+        is_delete: false,
       },
       {
         id: 'comment-2',
         username: 'dicoding',
         content: 'content 2',
         date: '2021-08-08T07:28:21.497Z',
-        isDelete: true,
+        is_delete: true,
       },
     ];
 

@@ -133,13 +133,13 @@ describe('CommentRepositoryPostgres', () => {
       expect(comments[0].id).toEqual('comment-1');
       expect(comments[0].username).toEqual('johndoe');
       expect(comments[0].content).toEqual('content 1');
-      expect(comments[0].isDelete).toBe(false);
+      expect(comments[0].is_delete).toBe(false);
       expect(comments[0].date).toBeDefined();
 
       expect(comments[1].id).toEqual('comment-2');
       expect(comments[1].username).toEqual('dicoding');
       expect(comments[1].content).toEqual('content 2');
-      expect(comments[1].isDelete).toBe(true);
+      expect(comments[1].is_delete).toBe(true);
       expect(comments[1].date).toBeDefined();
     });
   });

@@ -78,13 +78,7 @@ class CommentRepositoryPostgres extends CommentRepository {
 
     const result = await this._pool.query(query);
 
-    return result.rows.map((row) => ({
-      id: row.id,
-      username: row.username,
-      date: row.date,
-      content: row.content,
-      isDelete: row.is_delete,
-    }));
+    return result.rows;
   }
 }
 

@@ -37,7 +37,7 @@ class GetThreadUseCase {
       id: comment.id,
       username: comment.username,
       date: comment.date,
-      content: comment.isDelete ? '**komentar telah dihapus**' : comment.content,
+      content: comment.is_delete ? '**komentar telah dihapus**' : comment.content,
     }));
 
     return new DetailThread({
