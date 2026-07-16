@@ -22,6 +22,7 @@ GeneralErrorTranslator._directories = {
   'VERIFY_AUTHENTICATION_EXIST.INVALID_CREDENTIALS': new AuthenticationError('kredensial yang Anda masukkan salah'),
   'VERIFY_AUTHENTICATION_EXIST.REFRESH_TOKEN_NOT_FOUND': new InvariantError('refresh token tidak ditemukan di database'),
   'VERIFY_THREAD_EXIST.NOT_FOUND': new NotFoundError('thread tidak ditemukan'),
+  'VERIFY_COMMENT_EXISTS.NOT_FOUND': new NotFoundError('komentar tidak ditemukan'),
   'GET_THREAD_USE_CASE.NOT_CONTAIN_THREAD_ID': new InvariantError('harus mengirimkan thread id'),
   'GET_THREAD_USE_CASE.THREAD_ID_NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('thread id harus string'),
 };

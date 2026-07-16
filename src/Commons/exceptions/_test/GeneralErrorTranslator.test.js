@@ -11,6 +11,8 @@ describe('GeneralErrorTranslator', () => {
       .toStrictEqual(new NotFoundError('user tidak ditemukan'));
     expect(GeneralErrorTranslator.translate(new Error('VERIFY_AUTHENTICATION_EXIST.NOT_FOUND')))
       .toStrictEqual(new AuthenticationError('Missing authentication'));
+    expect(GeneralErrorTranslator.translate(new Error('VERIFY_COMMENT_EXISTS.NOT_FOUND')))
+      .toStrictEqual(new NotFoundError('komentar tidak ditemukan'));
   });
 
   it('should return original error when error message is not needed to translate', () => {
