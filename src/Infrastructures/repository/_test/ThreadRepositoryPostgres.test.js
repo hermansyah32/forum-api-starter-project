@@ -1,4 +1,5 @@
 import ThreadsTableTestHelper from '../../../../tests/ThreadsTableTestHelper.js';
+import UsersTableTestHelper from '../../../../tests/UsersTableTestHelper.js';
 import AddThread from '../../../Domains/threads/entities/AddThread.js';
 import AddedThread from '../../../Domains/threads/entities/AddedThread.js';
 import pool from '../../database/postgres/pool.js';
@@ -7,6 +8,7 @@ import ThreadRepositoryPostgres from '../ThreadRepositoryPostgres.js';
 describe('ThreadRepositoryPostgres', () => {
   afterEach(async () => {
     await ThreadsTableTestHelper.cleanTable();
+    await UsersTableTestHelper.cleanTable();
   });
 
   afterAll(async () => {
@@ -115,6 +117,41 @@ describe('ThreadRepositoryPostgres', () => {
         body: 'a body',
         owner: 'user-123',
       });
+    });
+  });
+
+  describe('getThreadById function', () => {
+    it('should return null when thread not found', async () => {
+      // Arrange
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
+
+      // Action
+      const thread = await threadRepositoryPostgres.getThreadById('thread-xxx');
+
+      // Assert
+      expect(thread).toBeNull();
+    });
+
+    it('should return thread details correctly when thread is found', async () => {
+      // Arrange
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+      await ThreadsTableTestHelper.addThread({
+        id: 'thread-123',
+        title: 'a title',
+        body: 'a body',
+        owner: 'user-123',
+      });
+
+      // Action
+      const thread = await threadRepositoryPostgres.getThreadById('thread-123');
+
+      // Assert
+      expect(thread.id).toEqual('thread-123');
+      expect(thread.title).toEqual('a title');
+      expect(thread.body).toEqual('a body');
+      expect(thread.username).toEqual('dicoding');
+      expect(thread.date).toBeDefined();
     });
   });
 });

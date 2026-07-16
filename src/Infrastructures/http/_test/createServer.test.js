@@ -634,6 +634,76 @@ describe('HTTP server', () => {
     });
   });
 
+  describe('when GET /threads/{threadId}', () => {
+    it('should response 200 and return thread details with comments correctly', async () => {
+      // Arrange
+      const threadId = 'thread-123';
+      const commentId1 = 'comment-1';
+      const commentId2 = 'comment-2';
+
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'johndoe' });
+      await UsersTableTestHelper.addUser({ id: 'user-456', username: 'dicoding' });
+      await ThreadsTableTestHelper.addThread({ id: threadId, title: 'Thread Title', body: 'Thread Body', owner: 'user-123' });
+
+      await CommentsTableTestHelper.addComment({
+        id: commentId1,
+        owner: 'user-123',
+        threadId: threadId,
+        content: 'Comment content 1',
+        isDelete: false,
+      });
+
+      await CommentsTableTestHelper.addComment({
+        id: commentId2,
+        owner: 'user-456',
+        threadId: threadId,
+        content: 'Comment content 2',
+        isDelete: true,
+      });
+
+      const app = await createServer(container);
+
+      // Action
+      const response = await request(app).get(`/threads/${threadId}`);
+
+      // Assert
+      expect(response.status).toEqual(200);
+      expect(response.body.status).toEqual('success');
+      expect(response.body.data.thread).toBeDefined();
+
+      const { thread } = response.body.data;
+      expect(thread.id).toEqual(threadId);
+      expect(thread.title).toEqual('Thread Title');
+      expect(thread.body).toEqual('Thread Body');
+      expect(thread.username).toEqual('johndoe');
+      expect(thread.date).toBeDefined();
+
+      expect(thread.comments).toHaveLength(2);
+      expect(thread.comments[0].id).toEqual(commentId1);
+      expect(thread.comments[0].username).toEqual('johndoe');
+      expect(thread.comments[0].content).toEqual('Comment content 1');
+      expect(thread.comments[0].date).toBeDefined();
+
+      expect(thread.comments[1].id).toEqual(commentId2);
+      expect(thread.comments[1].username).toEqual('dicoding');
+      expect(thread.comments[1].content).toEqual('**komentar telah dihapus**');
+      expect(thread.comments[1].date).toBeDefined();
+    });
+
+    it('should response 404 when thread is not found', async () => {
+      // Arrange
+      const app = await createServer(container);
+
+      // Action
+      const response = await request(app).get('/threads/thread-xxx');
+
+      // Assert
+      expect(response.status).toEqual(404);
+      expect(response.body.status).toEqual('fail');
+      expect(response.body.message).toEqual('thread tidak ditemukan');
+    });
+  });
+
   it('should handle server error correctly', async () => {
     // Arrange
     const requestPayload = {

@@ -1,6 +1,7 @@
 import AddThreadUseCase from '../../../../Applications/use_case/AddThreadUseCase.js';
 import AddCommentUseCase from '../../../../Applications/use_case/AddCommentUseCase.js';
 import DeleteCommentUseCase from '../../../../Applications/use_case/DeleteCommentUseCase.js';
+import GetThreadUseCase from '../../../../Applications/use_case/GetThreadUseCase.js';
 
 class ThreadsHandler {
   constructor(container) {
@@ -9,6 +10,7 @@ class ThreadsHandler {
     this.postThreadHandler = this.postThreadHandler.bind(this);
     this.postCommentHandler = this.postCommentHandler.bind(this);
     this.deleteCommentHandler = this.deleteCommentHandler.bind(this);
+    this.getThreadHandler = this.getThreadHandler.bind(this);
   }
 
   async postThreadHandler(req, res, next) {
@@ -68,6 +70,23 @@ class ThreadsHandler {
 
       res.status(200).json({
         status: 'success',
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getThreadHandler(req, res, next) {
+    try {
+      const { threadId } = req.params;
+      const getThreadUseCase = this._container.getInstance(GetThreadUseCase.name);
+      const thread = await getThreadUseCase.execute(threadId);
+
+      res.status(200).json({
+        status: 'success',
+        data: {
+          thread,
+        },
       });
     } catch (error) {
       next(error);
