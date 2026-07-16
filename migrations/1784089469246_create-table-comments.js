@@ -26,6 +26,11 @@ export const up = (pgm) => {
       type: 'TEXT',
       notNull: true,
     },
+    is_delete: {
+      type: 'BOOLEAN',
+      notNull: true,
+      default: false,
+    }
   });
 };
 

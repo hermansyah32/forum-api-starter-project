@@ -2,10 +2,10 @@
 import pool from '../src/Infrastructures/database/postgres/pool.js';
 
 const CommentsTableTestHelper = {
-  async addComment({ id = 'comment-123', owner = 'user-123', threadId = 'thread-123', content = 'some content' }) {
+  async addComment({ id = 'comment-123', owner = 'user-123', threadId = 'thread-123', content = 'some content', isDelete = false }) {
     const query = {
-      text: 'INSERT INTO comments VALUES($1, $2, $3, $4)',
-      values: [id, owner, threadId, content],
+      text: 'INSERT INTO comments(id, owner, thread_id, content, is_delete) VALUES($1, $2, $3, $4, $5)',
+      values: [id, owner, threadId, content, isDelete],
     };
 
     await pool.query(query);

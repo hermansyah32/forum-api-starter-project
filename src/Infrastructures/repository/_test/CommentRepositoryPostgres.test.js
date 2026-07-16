@@ -72,7 +72,8 @@ describe('CommentRepositoryPostgres', () => {
 
       // Assert
       const comment = await CommentsTableTestHelper.findCommentById('comment-123');
-      expect(comment).toHaveLength(0);
+      expect(comment).toHaveLength(1);
+      expect(comment[0].is_delete).toBe(true);
     });
 
     it('should return null if comment to delete is not found', async () => {
