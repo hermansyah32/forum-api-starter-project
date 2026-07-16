@@ -1,6 +1,7 @@
 import express from 'express';
 import ClientError from '../../Commons/exceptions/ClientError.js';
 import DomainErrorTranslator from '../../Commons/exceptions/DomainErrorTranslator.js';
+import GeneralErrorTranslator from '../../Commons/exceptions/GeneralErrorTranslator.js';
 import users from '../../Interfaces/http/api/users/index.js';
 import authentications from '../../Interfaces/http/api/authentications/index.js';
 import threads from '../../Interfaces/http/api/threads/index.js';
@@ -20,7 +21,8 @@ const createServer = async (container) => {
   /* eslint-disable-next-line no-unused-vars */
   app.use((error, req, res, next) => {
     // bila response tersebut error, tangani sesuai kebutuhan
-    const translatedError = DomainErrorTranslator.translate(error);
+    let translatedError = DomainErrorTranslator.translate(error);
+    translatedError = GeneralErrorTranslator.translate(translatedError);
 
     // penanganan client error secara internal.
     if (translatedError instanceof ClientError) {

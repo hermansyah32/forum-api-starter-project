@@ -11,8 +11,6 @@ describe('DomainErrorTranslator', () => {
       .toStrictEqual(new InvariantError('tidak dapat membuat user baru karena karakter username melebihi batas limit'));
     expect(DomainErrorTranslator.translate(new Error('REGISTER_USER.USERNAME_CONTAIN_RESTRICTED_CHARACTER')))
       .toStrictEqual(new InvariantError('tidak dapat membuat user baru karena username mengandung karakter terlarang'));
-    expect(DomainErrorTranslator.translate(new Error('GET_THREAD_USE_CASE.NOT_CONTAIN_THREAD_ID')))
-      .toStrictEqual(new InvariantError('harus mengirimkan thread id'));
   });
 
   it('should return original error when error message is not needed to translate', () => {
