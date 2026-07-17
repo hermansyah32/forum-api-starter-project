@@ -15,6 +15,8 @@ describe('DeleteReplyUseCase', () => {
       replyId: 'reply-123',
     };
 
+    const spyDeleteReply = vi.spyOn(DeleteReply.prototype, '_verifyPayload');
+
     const mockReplyRepository = new ReplyRepository();
     const mockCommentRepository = new CommentRepository();
     const mockThreadRepository = new ThreadRepository();
@@ -37,10 +39,13 @@ describe('DeleteReplyUseCase', () => {
     // Action & Assert
     await expect(deleteReplyUseCase.execute(useCasePayload)).resolves.not.toThrow();
 
+    expect(spyDeleteReply).toHaveBeenCalledWith(useCasePayload);
     expect(mockThreadRepository.verifyThreadExist).toBeCalledWith('thread-123');
     expect(mockCommentRepository.findCommentById).toBeCalledWith('comment-123');
     expect(mockReplyRepository.findReplyById).toBeCalledWith('reply-123');
     expect(mockReplyRepository.deleteReplyById).toBeCalledWith('reply-123');
+
+    spyDeleteReply.mockRestore();
   });
 
   it('should throw error when thread does not exist', async () => {

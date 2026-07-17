@@ -39,14 +39,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
 
     const result = await this._pool.query(query);
 
-    return result.rows.map((row) => ({
-      id: row.id,
-      username: row.username,
-      content: row.content,
-      date: row.date,
-      commentId: row.comment_id,
-      is_delete: row.is_delete,
-    }));
+    return result.rows;
   }
 
   async findReplyById(replyId) {

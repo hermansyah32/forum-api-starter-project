@@ -38,7 +38,7 @@ describe('GetThreadUseCase', () => {
     const mockReplies = [
       {
         id: 'reply-1',
-        commentId: 'comment-1',
+        comment_id: 'comment-1',
         username: 'user-a',
         content: 'reply content 1',
         date: '2021-08-08T07:29:21.497Z',
@@ -46,7 +46,7 @@ describe('GetThreadUseCase', () => {
       },
       {
         id: 'reply-2',
-        commentId: 'comment-1',
+        comment_id: 'comment-1',
         username: 'user-b',
         content: 'reply content 2',
         date: '2021-08-08T07:30:21.497Z',

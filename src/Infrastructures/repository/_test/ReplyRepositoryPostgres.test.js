@@ -82,14 +82,14 @@ describe('ReplyRepositoryPostgres', () => {
       expect(replies[0].id).toEqual('reply-1');
       expect(replies[0].username).toEqual('dicoding');
       expect(replies[0].content).toEqual('reply content 1');
-      expect(replies[0].commentId).toEqual('comment-123');
+      expect(replies[0].comment_id).toEqual('comment-123');
       expect(replies[0].is_delete).toEqual(false);
       expect(replies[0].date).toBeDefined();
 
       expect(replies[1].id).toEqual('reply-2');
       expect(replies[1].username).toEqual('dicoding');
       expect(replies[1].content).toEqual('reply content 2');
-      expect(replies[1].commentId).toEqual('comment-123');
+      expect(replies[1].comment_id).toEqual('comment-123');
       expect(replies[1].is_delete).toEqual(true);
       expect(replies[1].date).toBeDefined();
     });

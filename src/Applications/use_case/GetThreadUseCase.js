@@ -37,7 +37,7 @@ class GetThreadUseCase {
 
     const mappedComments = comments.map((comment) => {
       const commentReplies = replies
-        .filter((reply) => reply.commentId === comment.id)
+        .filter((reply) => reply.comment_id === comment.id)
         .map((reply) => ({
           id: reply.id,
           content: reply.is_delete ? '**balasan telah dihapus**' : reply.content,

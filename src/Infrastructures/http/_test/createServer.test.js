@@ -655,7 +655,7 @@ describe('HTTP server', () => {
         isDelete: false,
       });
 
-       await CommentsTableTestHelper.addComment({
+      await CommentsTableTestHelper.addComment({
         id: commentId2,
         owner: 'user-456',
         threadId: threadId,
