@@ -60,7 +60,8 @@ class ThreadRepositoryPostgres extends ThreadRepository {
       text: `SELECT threads.id, threads.title, threads.body, users.username, threads.created_at AS date
              FROM threads
              INNER JOIN users ON threads.owner = users.id
-             WHERE threads.id = $1`,
+             WHERE threads.id = $1
+             ORDER BY threads.created_at ASC`,
       values: [threadId],
     };
 
