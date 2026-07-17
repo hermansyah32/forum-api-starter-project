@@ -16,8 +16,8 @@ describe('AddThreadUseCase', () => {
 
     const mockAddedThread = new AddedThread({
       id: 'thread-123',
-      title: useCasePayload.title,
-      owner: useCasePayload.owner,
+      title: 'some thread',
+      owner: 'user-123',
     });
 
     const mockThreadRepository = new ThreadRepository();
@@ -95,5 +95,10 @@ describe('AddThreadUseCase', () => {
     await expect(addThreadUseCase.execute(useCasePayload))
       .rejects
       .toThrow('VERIFY_THREAD_EXIST.NOT_FOUND');
+    expect(mockThreadRepository.addThread).toBeCalledWith(new AddThread({
+      title: useCasePayload.title,
+      body: useCasePayload.body,
+      owner: useCasePayload.owner,
+    }));
   });
 });

@@ -19,8 +19,8 @@ describe('AddUserUseCase', () => {
 
     const mockRegisteredUser = new RegisteredUser({
       id: 'user-123',
-      username: useCasePayload.username,
-      fullname: useCasePayload.fullname,
+      username: 'dicoding',
+      fullname: 'Dicoding Indonesia',
     });
 
     /** creating dependency of use case */
@@ -83,5 +83,6 @@ describe('AddUserUseCase', () => {
     await expect(addUserUseCase.execute(useCasePayload))
       .rejects
       .toThrow('USER_REPOSITORY.USERNAME_UNAVAILABLE');
+    expect(mockUserRepository.verifyAvailableUsername).toBeCalledWith(useCasePayload.username);
   });
 });

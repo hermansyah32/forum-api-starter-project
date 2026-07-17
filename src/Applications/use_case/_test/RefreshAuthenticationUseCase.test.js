@@ -85,6 +85,7 @@ describe('RefreshAuthenticationUseCase', () => {
     await expect(refreshAuthenticationUseCase.execute(useCasePayload))
       .rejects
       .toThrow('VERIFY_AUTHENTICATION_EXIST.INVALID_REFRESH_TOKEN');
+    expect(mockAuthenticationTokenManager.verifyRefreshToken).toBeCalledWith(useCasePayload.refreshToken);
   });
 
   it('should throw error when refresh token not found in database', async () => {
@@ -109,5 +110,7 @@ describe('RefreshAuthenticationUseCase', () => {
     await expect(refreshAuthenticationUseCase.execute(useCasePayload))
       .rejects
       .toThrow('AUTHENTICATION_REPOSITORY.TOKEN_NOT_FOUND');
+    expect(mockAuthenticationTokenManager.verifyRefreshToken).toBeCalledWith(useCasePayload.refreshToken);
+    expect(mockAuthenticationRepository.checkAvailabilityToken).toBeCalledWith(useCasePayload.refreshToken);
   });
 });

@@ -17,8 +17,8 @@ describe('AddCommentUseCase', () => {
 
     const mockAddedComment = new AddedComment({
       id: 'comment-123',
-      content: useCasePayload.content,
-      owner: useCasePayload.owner,
+      content: 'some comment',
+      owner: 'user-123',
     });
 
     const mockCommentRepository = new CommentRepository();
@@ -37,6 +37,7 @@ describe('AddCommentUseCase', () => {
     const addedComment = await addCommentUseCase.execute(useCasePayload);
     // Assert
     expect(addedComment).toStrictEqual(mockAddedComment);
+    expect(mockThreadRepository.verifyThreadExist).toBeCalledWith(useCasePayload.threadId);
     expect(mockCommentRepository.addComment).toBeCalledWith(new AddComment({
       owner: useCasePayload.owner,
       threadId: useCasePayload.threadId,
@@ -66,6 +67,7 @@ describe('AddCommentUseCase', () => {
     await expect(addCommentUseCase.execute(useCasePayload))
       .rejects
       .toThrow('VERIFY_THREAD_EXIST.NOT_FOUND');
+    expect(mockThreadRepository.verifyThreadExist).toBeCalledWith(useCasePayload.threadId);
   });
 
   it('should throw error when payload not contain needed property', async () => {
@@ -126,5 +128,11 @@ describe('AddCommentUseCase', () => {
     await expect(addCommentUseCase.execute(useCasePayload))
       .rejects
       .toThrow('VERIFY_COMMENT_EXISTS.NOT_FOUND');
+    expect(mockThreadRepository.verifyThreadExist).toBeCalledWith(useCasePayload.threadId);
+    expect(mockCommentRepository.addComment).toBeCalledWith(new AddComment({
+      owner: useCasePayload.owner,
+      threadId: useCasePayload.threadId,
+      content: useCasePayload.content,
+    }));
   });
 });

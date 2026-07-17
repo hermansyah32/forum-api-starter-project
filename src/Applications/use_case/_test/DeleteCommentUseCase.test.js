@@ -17,9 +17,9 @@ describe('DeleteCommentUseCase', () => {
 
     const mockDeleteCommentPayload = new DeleteComment(useCasePayload);
     const mockAddedComment = new AddedComment({
-      id: useCasePayload.commentId,
+      id: 'comment-123',
       content: 'some comment',
-      owner: useCasePayload.owner,
+      owner: 'user-123',
     });
 
     const mockCommentRepository = new CommentRepository();
@@ -41,6 +41,7 @@ describe('DeleteCommentUseCase', () => {
 
     // Assert
     expect(deletedComment).toStrictEqual(true);
+    expect(mockThreadRepository.verifyThreadExist).toBeCalledWith(mockDeleteCommentPayload.threadId);
     expect(mockCommentRepository.findCommentById).toBeCalledWith(mockDeleteCommentPayload.commentId);
     expect(mockCommentRepository.deleteCommentById).toBeCalledWith(mockDeleteCommentPayload.commentId);
   });
@@ -67,6 +68,7 @@ describe('DeleteCommentUseCase', () => {
     await expect(deleteCommentUseCase.execute(useCasePayload))
       .rejects
       .toThrow('VERIFY_THREAD_EXIST.NOT_FOUND');
+    expect(mockThreadRepository.verifyThreadExist).toBeCalledWith(useCasePayload.threadId);
   });
 
   it('should throw error when comment does not exist', async () => {
@@ -93,6 +95,8 @@ describe('DeleteCommentUseCase', () => {
     await expect(deleteCommentUseCase.execute(useCasePayload))
       .rejects
       .toThrow('VERIFY_COMMENT_EXISTS.NOT_FOUND');
+    expect(mockThreadRepository.verifyThreadExist).toBeCalledWith(useCasePayload.threadId);
+    expect(mockCommentRepository.findCommentById).toBeCalledWith(useCasePayload.commentId);
   });
 
   it('should throw error when user is not authorized to delete the comment', async () => {
@@ -104,7 +108,7 @@ describe('DeleteCommentUseCase', () => {
     };
 
     const mockAddedComment = new AddedComment({
-      id: useCasePayload.commentId,
+      id: 'comment-123',
       content: 'some comment',
       owner: 'user-456', // different owner
     });
@@ -125,5 +129,7 @@ describe('DeleteCommentUseCase', () => {
     await expect(deleteCommentUseCase.execute(useCasePayload))
       .rejects
       .toThrow('DELETE_COMMENT.FORBIDDEN');
+    expect(mockThreadRepository.verifyThreadExist).toBeCalledWith(useCasePayload.threadId);
+    expect(mockCommentRepository.findCommentById).toBeCalledWith(useCasePayload.commentId);
   });
 });

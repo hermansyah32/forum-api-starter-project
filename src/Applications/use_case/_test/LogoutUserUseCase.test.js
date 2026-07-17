@@ -71,5 +71,7 @@ describe('LogoutUserUseCase', () => {
     await expect(logoutUserUseCase.execute(useCasePayload))
       .rejects
       .toThrow('VERIFY_AUTHENTICATION_EXIST.REFRESH_TOKEN_NOT_FOUND');
+    expect(mockAuthenticationRepository.checkAvailabilityToken)
+      .toHaveBeenCalledWith(useCasePayload.refreshToken);
   });
 });

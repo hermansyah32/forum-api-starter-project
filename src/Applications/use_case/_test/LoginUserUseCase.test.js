@@ -91,6 +91,7 @@ describe('GetAuthenticationUseCase', () => {
     await expect(loginUserUseCase.execute(useCasePayload))
       .rejects
       .toThrow('USER_REPOSITORY.USERNAME_NOT_FOUND');
+    expect(mockUserRepository.getPasswordByUsername).toBeCalledWith('dicoding');
   });
 
   it('should throw error when password is wrong', async () => {
@@ -120,5 +121,7 @@ describe('GetAuthenticationUseCase', () => {
     await expect(loginUserUseCase.execute(useCasePayload))
       .rejects
       .toThrow('PASSWORD_HASH.PASSWORD_NOT_MATCH');
+    expect(mockUserRepository.getPasswordByUsername).toBeCalledWith('dicoding');
+    expect(mockPasswordHash.comparePassword).toBeCalledWith('secret', 'encrypted_password');
   });
 });

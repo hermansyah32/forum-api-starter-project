@@ -72,6 +72,7 @@ describe('DeleteReplyUseCase', () => {
 
     // Action & Assert
     await expect(deleteReplyUseCase.execute(useCasePayload)).rejects.toThrowError('VERIFY_THREAD_EXIST.NOT_FOUND');
+    expect(mockThreadRepository.verifyThreadExist).toBeCalledWith(useCasePayload.threadId);
   });
 
   it('should throw error when comment does not exist', async () => {
@@ -100,6 +101,8 @@ describe('DeleteReplyUseCase', () => {
 
     // Action & Assert
     await expect(deleteReplyUseCase.execute(useCasePayload)).rejects.toThrowError('VERIFY_COMMENT_EXISTS.NOT_FOUND');
+    expect(mockThreadRepository.verifyThreadExist).toBeCalledWith(useCasePayload.threadId);
+    expect(mockCommentRepository.findCommentById).toBeCalledWith(useCasePayload.commentId);
   });
 
   it('should throw error when reply does not exist', async () => {
@@ -130,6 +133,9 @@ describe('DeleteReplyUseCase', () => {
 
     // Action & Assert
     await expect(deleteReplyUseCase.execute(useCasePayload)).rejects.toThrowError('VERIFY_REPLY_EXISTS.NOT_FOUND');
+    expect(mockThreadRepository.verifyThreadExist).toBeCalledWith(useCasePayload.threadId);
+    expect(mockCommentRepository.findCommentById).toBeCalledWith(useCasePayload.commentId);
+    expect(mockReplyRepository.findReplyById).toBeCalledWith(useCasePayload.replyId);
   });
 
   it('should throw error when reply is forbidden (different owner)', async () => {
@@ -160,6 +166,9 @@ describe('DeleteReplyUseCase', () => {
 
     // Action & Assert
     await expect(deleteReplyUseCase.execute(useCasePayload)).rejects.toThrowError('DELETE_REPLY.FORBIDDEN');
+    expect(mockThreadRepository.verifyThreadExist).toBeCalledWith(useCasePayload.threadId);
+    expect(mockCommentRepository.findCommentById).toBeCalledWith(useCasePayload.commentId);
+    expect(mockReplyRepository.findReplyById).toBeCalledWith(useCasePayload.replyId);
   });
 
   it('should throw error when comment does not belong to thread', async () => {
@@ -188,6 +197,8 @@ describe('DeleteReplyUseCase', () => {
 
     // Action & Assert
     await expect(deleteReplyUseCase.execute(useCasePayload)).rejects.toThrowError('VERIFY_COMMENT_EXISTS.NOT_FOUND');
+    expect(mockThreadRepository.verifyThreadExist).toBeCalledWith(useCasePayload.threadId);
+    expect(mockCommentRepository.findCommentById).toBeCalledWith(useCasePayload.commentId);
   });
 
   it('should throw error when reply does not belong to comment or thread', async () => {
@@ -218,5 +229,8 @@ describe('DeleteReplyUseCase', () => {
 
     // Action & Assert
     await expect(deleteReplyUseCase.execute(useCasePayload)).rejects.toThrowError('VERIFY_REPLY_EXISTS.NOT_FOUND');
+    expect(mockThreadRepository.verifyThreadExist).toBeCalledWith(useCasePayload.threadId);
+    expect(mockCommentRepository.findCommentById).toBeCalledWith(useCasePayload.commentId);
+    expect(mockReplyRepository.findReplyById).toBeCalledWith(useCasePayload.replyId);
   });
 });
