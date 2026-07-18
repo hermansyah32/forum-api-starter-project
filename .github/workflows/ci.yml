@@ -1,4 +1,4 @@
-name: CI Test
+name: CI Tests
 
 on:
   pull_request:
@@ -12,7 +12,6 @@ jobs:
     strategy:
       matrix:
         node-version: ["22"]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     services:
       postgres:
@@ -39,7 +38,7 @@ jobs:
         run: |
           cp .test.env.example .test.env
           npm ci
-          npm run migrate up
+          npm run migrate:test up
           npm run test
         env:
           CI: true
