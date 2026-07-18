@@ -9,6 +9,7 @@ import { describe } from 'vitest';
 import ThreadsTableTestHelper from '../../../../tests/ThreadsTableTestHelper.js';
 import CommentsTableTestHelper from '../../../../tests/CommentsTableTestHelper.js';
 import RepliesTableTestHelper from '../../../../tests/RepliesTableTestHelper.js';
+import LikesTableTestHelper from '../../../../tests/LikesTableTestHelper.js';
 
 describe('HTTP server', () => {
   afterAll(async () => {
@@ -21,6 +22,7 @@ describe('HTTP server', () => {
     await ThreadsTableTestHelper.cleanTable();
     await CommentsTableTestHelper.cleanTable();
     await RepliesTableTestHelper.cleanTable();
+    await LikesTableTestHelper.cleanTable();
   });
 
   it('should response 404 when request unregistered route', async () => {
@@ -680,6 +682,13 @@ describe('HTTP server', () => {
         isDelete: true,
       });
 
+      await LikesTableTestHelper.addLike({
+        id: 'like-123',
+        threadId,
+        commentId: commentId1,
+        userId: 'user-123',
+      });
+
       const app = await createServer(container);
 
       // Action
@@ -702,6 +711,7 @@ describe('HTTP server', () => {
       expect(thread.comments[0].username).toEqual('johndoe');
       expect(thread.comments[0].content).toEqual('Comment content 1');
       expect(thread.comments[0].date).toBeDefined();
+      expect(thread.comments[0].likeCount).toEqual(1);
       expect(thread.comments[0].replies).toHaveLength(2);
       expect(thread.comments[0].replies[0].id).toEqual('reply-1');
       expect(thread.comments[0].replies[0].username).toEqual('johndoe');
@@ -716,6 +726,7 @@ describe('HTTP server', () => {
       expect(thread.comments[1].username).toEqual('dicoding');
       expect(thread.comments[1].content).toEqual('**komentar telah dihapus**');
       expect(thread.comments[1].date).toBeDefined();
+      expect(thread.comments[1].likeCount).toEqual(0);
       expect(thread.comments[1].replies).toHaveLength(0);
     });
 
@@ -961,6 +972,95 @@ describe('HTTP server', () => {
       // Action
       const response = await request(app)
         .delete('/threads/thread-123/comments/comment-123/replies/reply-123')
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      // Assert
+      expect(response.status).toEqual(200);
+      expect(response.body.status).toEqual('success');
+    });
+  });
+
+  describe('when PUT /threads/:threadId/comments/:commentId/likes', () => {
+    it('should response 401 when request is not authenticated', async () => {
+      // Arrange
+      const app = await createServer(container);
+
+      // Action
+      const response = await request(app)
+        .put('/threads/thread-123/comments/comment-123/likes');
+
+      // Assert
+      expect(response.status).toEqual(401);
+      expect(response.body.status).toEqual('fail');
+    });
+
+    it('should response 404 when thread does not exist', async () => {
+      // Arrange
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+      const app = await createServer(container);
+      const tokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const accessToken = await tokenManager.createAccessToken({ id: 'user-123', username: 'dicoding' });
+
+      // Action
+      const response = await request(app)
+        .put('/threads/thread-xxx/comments/comment-123/likes')
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      // Assert
+      expect(response.status).toEqual(404);
+      expect(response.body.status).toEqual('fail');
+    });
+
+    it('should response 404 when comment does not exist', async () => {
+      // Arrange
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', owner: 'user-123' });
+      const app = await createServer(container);
+      const tokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const accessToken = await tokenManager.createAccessToken({ id: 'user-123', username: 'dicoding' });
+
+      // Action
+      const response = await request(app)
+        .put('/threads/thread-123/comments/comment-xxx/likes')
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      // Assert
+      expect(response.status).toEqual(404);
+      expect(response.body.status).toEqual('fail');
+    });
+
+    it('should response 200 and add like successfully when comment has not been liked', async () => {
+      // Arrange
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', owner: 'user-123' });
+      await CommentsTableTestHelper.addComment({ id: 'comment-123', threadId: 'thread-123', owner: 'user-123' });
+      const app = await createServer(container);
+      const tokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const accessToken = await tokenManager.createAccessToken({ id: 'user-123', username: 'dicoding' });
+
+      // Action
+      const response = await request(app)
+        .put('/threads/thread-123/comments/comment-123/likes')
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      // Assert
+      expect(response.status).toEqual(200);
+      expect(response.body.status).toEqual('success');
+    });
+
+    it('should response 200 and remove like successfully when comment has already been liked', async () => {
+      // Arrange
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', owner: 'user-123' });
+      await CommentsTableTestHelper.addComment({ id: 'comment-123', threadId: 'thread-123', owner: 'user-123' });
+      await LikesTableTestHelper.addLike({ id: 'like-123', threadId: 'thread-123', commentId: 'comment-123', userId: 'user-123' });
+      const app = await createServer(container);
+      const tokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const accessToken = await tokenManager.createAccessToken({ id: 'user-123', username: 'dicoding' });
+
+      // Action
+      const response = await request(app)
+        .put('/threads/thread-123/comments/comment-123/likes')
         .set('Authorization', `Bearer ${accessToken}`);
 
       // Assert

@@ -15,6 +15,7 @@ describe('DetailThread entity', () => {
           username: 'johndoe',
           content: 'some content',
           date: '2021-08-08T07:26:21.497Z',
+          likeCount: 0,
           replies: [
             {
               id: 'reply-123',
@@ -101,6 +102,7 @@ describe('DetailThread entity', () => {
           username: 123,
           content: 'some content',
           date: true,
+          likeCount: 'invalid likeCount type',
           replies: 'invalid replies type',
         },
       ],
@@ -125,6 +127,7 @@ describe('DetailThread entity', () => {
           username: 'johndoe',
           content: 'some content',
           date: '2021-08-08T07:26:21.497Z',
+          likeCount: 0,
           replies: [
             {
               id: 'reply-123',
@@ -153,6 +156,7 @@ describe('DetailThread entity', () => {
           username: 'johndoe',
           content: 'some content',
           date: '2021-08-08T07:26:21.497Z',
+          likeCount: 0,
           replies: [
             {
               id: 'reply-123',
