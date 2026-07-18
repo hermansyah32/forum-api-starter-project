@@ -36,6 +36,29 @@ describe('HTTP server', () => {
     expect(response.status).toEqual(404);
   });
 
+  it('should response 200 or 301 when request to /api-docs', async () => {
+    // Arrange
+    const app = await createServer({});
+
+    // Action
+    const response = await request(app).get('/api-docs');
+
+    // Assert
+    expect([200, 301, 302]).toContain(response.status);
+  });
+
+  it('should response 200 when request to /api-docs/', async () => {
+    // Arrange
+    const app = await createServer({});
+
+    // Action
+    const response = await request(app).get('/api-docs/');
+
+    // Assert
+    expect(response.status).toEqual(200);
+    expect(response.text).toContain('<html');
+  });
+
   describe('when POST /users', () => {
     it('should response 201 and persisted user', async () => {
       // Arrange
