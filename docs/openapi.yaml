@@ -7,6 +7,20 @@ servers:
   - url: /
     description: Current server
 
+tags:
+  - name: Users
+    description: Endpoint registrasi user.
+  - name: Authentications
+    description: Endpoint manajemen token autentikasi.
+  - name: Threads
+    description: Endpoint pengelolaan thread diskusi.
+  - name: Comments
+    description: Endpoint pengelolaan komentar thread.
+  - name: Likes
+    description: Endpoint menyukai dan membatalkan suka komentar.
+  - name: Replies
+    description: Endpoint pengelolaan balasan komentar.
+
 components:
   securitySchemes:
     bearerAuth:
@@ -545,7 +559,7 @@ paths:
     put:
       summary: Menyukai / Membatalkan Suka Komentar (Like/Unlike Toggle)
       tags:
-        - Comments
+        - Likes
       security:
         - bearerAuth: []
       parameters:
