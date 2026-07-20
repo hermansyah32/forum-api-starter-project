@@ -13,11 +13,11 @@ if (process.env.NODE_ENV === 'test') {
 }
 
 const getSslConfig = () => {
-  if (process.env.PGSSL === 'true') {
-    if (process.env.PGSSLCA) {
+  if (process.env.PGSSLMODE && process.env.PGSSLROOTCERT) {
+    if (process.env.PGSSLROOTCERT) {
       return {
         rejectUnauthorized: true,
-        ca: fs.readFileSync(path.resolve(process.cwd(), process.env.PGSSLCA)).toString(),
+        ca: fs.readFileSync(path.resolve(process.cwd(), process.env.PGSSLROOTCERT)).toString(),
       };
     }
     return { rejectUnauthorized: false };
