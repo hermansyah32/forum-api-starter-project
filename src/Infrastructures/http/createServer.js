@@ -8,6 +8,7 @@ import threads from '../../Interfaces/http/api/threads/index.js';
 import swaggerUi from 'swagger-ui-express';
 import yaml from 'yamljs';
 import path from 'path';
+import logger from '../../Commons/utils/logger.js';
 
 const createServer = async (container) => {
   const app = express();
@@ -33,6 +34,7 @@ const createServer = async (container) => {
 
     // penanganan client error secara internal.
     if (translatedError instanceof ClientError) {
+      logger.warn(`Client Error (${translatedError.statusCode}) on ${req.method} ${req.url}: ${translatedError.message}`);
       return res.status(translatedError.statusCode).json({
         status: 'fail',
         message: translatedError.message,
@@ -40,6 +42,7 @@ const createServer = async (container) => {
     }
 
     // penanganan server error sesuai kebutuhan
+    logger.error(`Internal Server Error on ${req.method} ${req.url}: ${error.message}\nStack: ${error.stack}`);
     return res.status(500).json({
       status: 'error',
       message: 'terjadi kegagalan pada server kami',
