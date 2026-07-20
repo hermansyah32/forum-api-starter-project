@@ -31,7 +31,14 @@ class DetailThread {
     }
 
     for (const comment of comments) {
-      if (!comment.id || !comment.username || !comment.content || !comment.date || !comment.replies) {
+      if (
+        !comment.id ||
+        !comment.username ||
+        !comment.content ||
+        !comment.date ||
+        !comment.replies ||
+        comment.likeCount === undefined
+      ) {
         throw new Error('DETAIL_THREAD.COMMENT_NOT_CONTAIN_NEEDED_PROPERTY');
       }
 
@@ -40,7 +47,8 @@ class DetailThread {
         typeof comment.username !== 'string' ||
         typeof comment.content !== 'string' ||
         (typeof comment.date !== 'string' && !(comment.date instanceof Date)) ||
-        !Array.isArray(comment.replies)
+        !Array.isArray(comment.replies) ||
+        typeof comment.likeCount !== 'number'
       ) {
         throw new Error('DETAIL_THREAD.COMMENT_NOT_MEET_DATA_TYPE_SPECIFICATION');
       }

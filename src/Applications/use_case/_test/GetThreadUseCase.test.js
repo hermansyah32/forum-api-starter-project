@@ -4,6 +4,7 @@ import DetailThread from '../../../Domains/threads/entities/DetailThread.js';
 import ThreadRepository from '../../../Domains/threads/ThreadRepository.js';
 import CommentRepository from '../../../Domains/comments/CommentRepository.js';
 import ReplyRepository from '../../../Domains/replies/ReplyRepository.js';
+import LikeRepository from '../../../Domains/likes/LikeRepository.js';
 import GetThreadUseCase from '../GetThreadUseCase.js';
 
 describe('GetThreadUseCase', () => {
@@ -57,6 +58,7 @@ describe('GetThreadUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     const mockReplyRepository = new ReplyRepository();
+    const mockLikeRepository = new LikeRepository();
 
     mockThreadRepository.verifyThreadExist = vi.fn()
       .mockImplementation(() => Promise.resolve(true));
@@ -66,11 +68,16 @@ describe('GetThreadUseCase', () => {
       .mockImplementation(() => Promise.resolve(mockComments));
     mockReplyRepository.getRepliesByThreadId = vi.fn()
       .mockImplementation(() => Promise.resolve(mockReplies));
+    mockLikeRepository.getLikeCountsByThreadId = vi.fn()
+      .mockImplementation(() => Promise.resolve([
+        { comment_id: 'comment-1', like_count: 2 },
+      ]));
 
     const getThreadUseCase = new GetThreadUseCase({
       commentRepository: mockCommentRepository,
       threadRepository: mockThreadRepository,
       replyRepository: mockReplyRepository,
+      likeRepository: mockLikeRepository,
     });
 
     // Action
@@ -89,6 +96,7 @@ describe('GetThreadUseCase', () => {
           username: 'johndoe',
           date: '2021-08-08T07:26:21.497Z',
           content: 'content 1',
+          likeCount: 2,
           replies: [
             {
               id: 'reply-1',
@@ -109,6 +117,7 @@ describe('GetThreadUseCase', () => {
           username: 'dicoding',
           date: '2021-08-08T07:28:21.497Z',
           content: '**komentar telah dihapus**',
+          likeCount: 0,
           replies: [],
         },
       ],
@@ -118,6 +127,7 @@ describe('GetThreadUseCase', () => {
     expect(mockThreadRepository.getThreadById).toBeCalledWith(threadId);
     expect(mockCommentRepository.getCommentsByThreadId).toBeCalledWith(threadId);
     expect(mockReplyRepository.getRepliesByThreadId).toBeCalledWith(threadId);
+    expect(mockLikeRepository.getLikeCountsByThreadId).toBeCalledWith(threadId);
   });
 
   it('should throw error when thread does not exist', async () => {
@@ -135,6 +145,7 @@ describe('GetThreadUseCase', () => {
       commentRepository: mockCommentRepository,
       threadRepository: mockThreadRepository,
       replyRepository: mockReplyRepository,
+      likeRepository: {},
     });
 
     // Action & Assert
@@ -149,6 +160,7 @@ describe('GetThreadUseCase', () => {
       commentRepository: {},
       threadRepository: {},
       replyRepository: {},
+      likeRepository: {},
     });
 
     // Action & Assert
@@ -163,6 +175,7 @@ describe('GetThreadUseCase', () => {
       commentRepository: {},
       threadRepository: {},
       replyRepository: {},
+      likeRepository: {},
     });
 
     // Action & Assert
@@ -177,6 +190,7 @@ describe('GetThreadUseCase', () => {
       commentRepository: {},
       threadRepository: {},
       replyRepository: {},
+      likeRepository: {},
     });
 
     // Action & Assert
@@ -191,6 +205,7 @@ describe('GetThreadUseCase', () => {
       commentRepository: {},
       threadRepository: {},
       replyRepository: {},
+      likeRepository: {},
     });
 
     // Action & Assert
