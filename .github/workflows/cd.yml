@@ -23,6 +23,6 @@ jobs:
                       [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
                       cd ~/apps/forum-api-starter-project
                       git pull origin main
-                      npm ci --omit=dev --no-audit --no-fund
+                      npm ci --no-audit --no-fund
                       npm run migrate up
                       pm2 restart forum-api
