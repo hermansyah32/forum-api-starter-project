@@ -4,8 +4,8 @@ info:
   description: Dokumentasi API untuk aplikasi Forum diskusi online.
   version: 1.0.0
 servers:
-  - url: http://localhost:3000
-    description: Development server
+  - url: /
+    description: Current server
 
 components:
   securitySchemes:
@@ -288,20 +288,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterUserPayload'
+              $ref: "#/components/schemas/RegisterUserPayload"
       responses:
         201:
           description: Pengguna baru berhasil terdaftar
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RegisterUserResponse'
+                $ref: "#/components/schemas/RegisterUserResponse"
         400:
           description: Validasi gagal / properti tidak lengkap atau tipe data tidak sesuai
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommonErrorResponse'
+                $ref: "#/components/schemas/CommonErrorResponse"
 
   /authentications:
     post:
@@ -313,26 +313,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginPayload'
+              $ref: "#/components/schemas/LoginPayload"
       responses:
         201:
           description: Login berhasil, token akses dan refresh didapatkan
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LoginResponse'
+                $ref: "#/components/schemas/LoginResponse"
         400:
           description: Parameter login tidak lengkap atau kredensial salah
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommonErrorResponse'
+                $ref: "#/components/schemas/CommonErrorResponse"
         401:
           description: Kredensial tidak valid
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommonErrorResponse'
+                $ref: "#/components/schemas/CommonErrorResponse"
 
     put:
       summary: Memperbarui Access Token
@@ -343,20 +343,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RefreshTokenPayload'
+              $ref: "#/components/schemas/RefreshTokenPayload"
       responses:
         200:
           description: Access token diperbarui
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RefreshTokenResponse'
+                $ref: "#/components/schemas/RefreshTokenResponse"
         400:
           description: Refresh token tidak dikirim atau bukan bertipe string / tidak valid
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommonErrorResponse'
+                $ref: "#/components/schemas/CommonErrorResponse"
 
     delete:
       summary: Logout / Menghapus Refresh Token
@@ -367,7 +367,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RefreshTokenPayload'
+              $ref: "#/components/schemas/RefreshTokenPayload"
       responses:
         200:
           description: Logout berhasil
@@ -384,7 +384,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommonErrorResponse'
+                $ref: "#/components/schemas/CommonErrorResponse"
 
   /threads:
     post:
@@ -398,26 +398,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AddThreadPayload'
+              $ref: "#/components/schemas/AddThreadPayload"
       responses:
         201:
           description: Thread berhasil dibuat
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AddThreadResponse'
+                $ref: "#/components/schemas/AddThreadResponse"
         400:
           description: Payload tidak memenuhi spesifikasi data
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommonErrorResponse'
+                $ref: "#/components/schemas/CommonErrorResponse"
         401:
           description: Request tidak diautentikasi
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommonErrorResponse'
+                $ref: "#/components/schemas/CommonErrorResponse"
 
   /threads/{threadId}:
     get:
@@ -437,13 +437,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetThreadResponse'
+                $ref: "#/components/schemas/GetThreadResponse"
         404:
           description: Thread tidak ditemukan
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommonErrorResponse'
+                $ref: "#/components/schemas/CommonErrorResponse"
 
   /threads/{threadId}/comments:
     post:
@@ -464,32 +464,32 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AddCommentPayload'
+              $ref: "#/components/schemas/AddCommentPayload"
       responses:
         201:
           description: Komentar berhasil ditambahkan
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AddCommentResponse'
+                $ref: "#/components/schemas/AddCommentResponse"
         400:
           description: Parameter tidak lengkap atau salah tipe data
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommonErrorResponse'
+                $ref: "#/components/schemas/CommonErrorResponse"
         401:
           description: Request tidak diautentikasi
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommonErrorResponse'
+                $ref: "#/components/schemas/CommonErrorResponse"
         404:
           description: Thread tidak ditemukan
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommonErrorResponse'
+                $ref: "#/components/schemas/CommonErrorResponse"
 
   /threads/{threadId}/comments/{commentId}:
     delete:
@@ -527,19 +527,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommonErrorResponse'
+                $ref: "#/components/schemas/CommonErrorResponse"
         403:
           description: Pengguna bukan pemilik komentar
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommonErrorResponse'
+                $ref: "#/components/schemas/CommonErrorResponse"
         404:
           description: Thread atau komentar tidak ditemukan
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommonErrorResponse'
+                $ref: "#/components/schemas/CommonErrorResponse"
 
   /threads/{threadId}/comments/{commentId}/likes:
     put:
@@ -577,13 +577,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommonErrorResponse'
+                $ref: "#/components/schemas/CommonErrorResponse"
         404:
           description: Thread atau komentar tidak ditemukan
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommonErrorResponse'
+                $ref: "#/components/schemas/CommonErrorResponse"
 
   /threads/{threadId}/comments/{commentId}/replies:
     post:
@@ -610,32 +610,32 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AddReplyPayload'
+              $ref: "#/components/schemas/AddReplyPayload"
       responses:
         201:
           description: Balasan berhasil ditambahkan
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AddReplyResponse'
+                $ref: "#/components/schemas/AddReplyResponse"
         400:
           description: Parameter tidak lengkap atau salah tipe data
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommonErrorResponse'
+                $ref: "#/components/schemas/CommonErrorResponse"
         401:
           description: Request tidak diautentikasi
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommonErrorResponse'
+                $ref: "#/components/schemas/CommonErrorResponse"
         404:
           description: Thread atau komentar tidak ditemukan
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommonErrorResponse'
+                $ref: "#/components/schemas/CommonErrorResponse"
 
   /threads/{threadId}/comments/{commentId}/replies/{replyId}:
     delete:
@@ -679,16 +679,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommonErrorResponse'
+                $ref: "#/components/schemas/CommonErrorResponse"
         403:
           description: Pengguna bukan pemilik balasan
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommonErrorResponse'
+                $ref: "#/components/schemas/CommonErrorResponse"
         404:
           description: Thread, komentar, atau balasan tidak ditemukan
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommonErrorResponse'
+                $ref: "#/components/schemas/CommonErrorResponse"
