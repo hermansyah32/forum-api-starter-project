@@ -100,7 +100,7 @@ npm start
 
 Dokumentasi OpenAPI dapat diakses secara langsung melalui browser saat aplikasi berjalan:
 - **URL**: `http://localhost:5000/api-docs` (atau `https://domain-anda.com/api-docs`)
-- **Fitur**: Uji coba endpoint secara interaktif (*Try it out -> Execute*).
+- **Fitur**: Uji coba endpoint secara interaktif (*Try it out -> Execute*) dengan skema data lengkap per kategori tag (*Users*, *Authentications*, *Threads*, *Comments*, *Likes*, *Replies*).
 
 ---
 
@@ -126,10 +126,10 @@ npm run lint
 
 ## Pengaturan Server Produksi (Nginx & CI/CD)
 
-- **Nginx Reverse Proxy**: Konfigurasi siap pakai tersedia di berkas [nginx-config.conf](file:///mnt/netdata1/projects/dicoding/menjadi-backend-expert-javascript/forum-api-starter-project-code/nginx-config.conf) (dilengkapi dengan *Rate Limiting* 90 request/menit dan dukungan HTTPS SSL Certbot).
+- **Nginx Reverse Proxy**: Konfigurasi siap pakai tersedia di berkas [nginx-config.conf](file:///mnt/netdata1/projects/dicoding/menjadi-backend-expert-javascript/forum-api-starter-project-code/nginx-config.conf) (dilengkapi dengan *Rate Limiting* 90 request/menit khusus rute `/threads` dan turunannya, serta dukungan HTTPS SSL Certbot).
 - **CI/CD Pipeline**:
-  - **CI Workflow**: [.github/workflows/ci.yml](file:///mnt/netdata1/projects/dicoding/menjadi-backend-expert-javascript/forum-api-starter-project-code/.github/workflows/ci.yml) (Menjalankan pengujian otomatis saat PR ke branch `main`).
-  - **CD Workflow**: [.github/workflows/cd.yml](file:///mnt/netdata1/projects/dicoding/menjadi-backend-expert-javascript/forum-api-starter-project-code/.github/workflows/cd.yml) (Automated deployment via SSH & PM2 saat PR di-merge ke branch `main`).
+  - **Continuous Integration**: [.github/workflows/ci.yml](file:///mnt/netdata1/projects/dicoding/menjadi-backend-expert-javascript/forum-api-starter-project-code/.github/workflows/ci.yml) (Menjalankan pengujian dan migrasi test otomatis pada setiap Pull Request ke branch `main`).
+  - **Continuous Deployment**: [.github/workflows/cd.yml](file:///mnt/netdata1/projects/dicoding/menjadi-backend-expert-javascript/forum-api-starter-project-code/.github/workflows/cd.yml) (Automated deployment via SSH & PM2 saat PR di-merge ke branch `main`).
 
 ---
 
