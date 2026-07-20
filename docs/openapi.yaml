@@ -1,0 +1,708 @@
+openapi: 3.0.3
+info:
+  title: Forum API
+  description: Dokumentasi API untuk aplikasi Forum diskusi online.
+  version: 1.0.0
+servers:
+  - url: /
+    description: Current server
+
+tags:
+  - name: Users
+    description: Endpoint registrasi user.
+  - name: Authentications
+    description: Endpoint manajemen token autentikasi.
+  - name: Threads
+    description: Endpoint pengelolaan thread diskusi.
+  - name: Comments
+    description: Endpoint pengelolaan komentar thread.
+  - name: Likes
+    description: Endpoint menyukai dan membatalkan suka komentar.
+  - name: Replies
+    description: Endpoint pengelolaan balasan komentar.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    RegisterUserPayload:
+      type: object
+      required:
+        - username
+        - password
+        - fullname
+      properties:
+        username:
+          type: string
+          example: dicoding
+        password:
+          type: string
+          example: supersecret
+        fullname:
+          type: string
+          example: Dicoding Indonesia
+
+    RegisterUserResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            addedUser:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: user-123
+                username:
+                  type: string
+                  example: dicoding
+                fullname:
+                  type: string
+                  example: Dicoding Indonesia
+
+    LoginPayload:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          example: dicoding
+        password:
+          type: string
+          example: supersecret
+
+    LoginResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            accessToken:
+              type: string
+              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+            refreshToken:
+              type: string
+              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+    RefreshTokenPayload:
+      type: object
+      required:
+        - refreshToken
+      properties:
+        refreshToken:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+    RefreshTokenResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            accessToken:
+              type: string
+              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+    AddThreadPayload:
+      type: object
+      required:
+        - title
+        - body
+      properties:
+        title:
+          type: string
+          example: Judul Thread Baru
+        body:
+          type: string
+          example: Konten atau isi thread diskusi.
+
+    AddThreadResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            addedThread:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: thread-123
+                title:
+                  type: string
+                  example: Judul Thread Baru
+                owner:
+                  type: string
+                  example: user-123
+
+    AddCommentPayload:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: string
+          example: Ini adalah komentar pada thread.
+
+    AddCommentResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            addedComment:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: comment-123
+                content:
+                  type: string
+                  example: Ini adalah komentar pada thread.
+                owner:
+                  type: string
+                  example: user-123
+
+    AddReplyPayload:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: string
+          example: Ini adalah balasan untuk komentar.
+
+    AddReplyResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            addedReply:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: reply-123
+                content:
+                  type: string
+                  example: Ini adalah balasan untuk komentar.
+                owner:
+                  type: string
+                  example: user-123
+
+    GetThreadResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            thread:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: thread-123
+                title:
+                  type: string
+                  example: Judul Thread Baru
+                body:
+                  type: string
+                  example: Konten atau isi thread diskusi.
+                date:
+                  type: string
+                  example: 2021-08-08T07:22:33.555Z
+                username:
+                  type: string
+                  example: dicoding
+                comments:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: comment-123
+                      username:
+                        type: string
+                        example: johndoe
+                      date:
+                        type: string
+                        example: 2021-08-08T07:26:21.497Z
+                      content:
+                        type: string
+                        example: Ini adalah komentar pada thread.
+                      likeCount:
+                        type: integer
+                        example: 2
+                      replies:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: reply-123
+                            content:
+                              type: string
+                              example: Ini adalah balasan untuk komentar.
+                            date:
+                              type: string
+                              example: 2021-08-08T07:29:21.497Z
+                            username:
+                              type: string
+                              example: user-a
+
+    CommonErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: fail
+        message:
+          type: string
+          example: Deskripsi kegagalan aksi.
+
+paths:
+  /users:
+    post:
+      summary: Registrasi Pengguna Baru
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterUserPayload"
+      responses:
+        201:
+          description: Pengguna baru berhasil terdaftar
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisterUserResponse"
+        400:
+          description: Validasi gagal / properti tidak lengkap atau tipe data tidak sesuai
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonErrorResponse"
+
+  /authentications:
+    post:
+      summary: Login Pengguna
+      tags:
+        - Authentications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginPayload"
+      responses:
+        201:
+          description: Login berhasil, token akses dan refresh didapatkan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        400:
+          description: Parameter login tidak lengkap atau kredensial salah
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonErrorResponse"
+        401:
+          description: Kredensial tidak valid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonErrorResponse"
+
+    put:
+      summary: Memperbarui Access Token
+      tags:
+        - Authentications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenPayload"
+      responses:
+        200:
+          description: Access token diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefreshTokenResponse"
+        400:
+          description: Refresh token tidak dikirim atau bukan bertipe string / tidak valid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonErrorResponse"
+
+    delete:
+      summary: Logout / Menghapus Refresh Token
+      tags:
+        - Authentications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenPayload"
+      responses:
+        200:
+          description: Logout berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+        400:
+          description: Refresh token tidak dikirim atau tidak valid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonErrorResponse"
+
+  /threads:
+    post:
+      summary: Membuat Thread Baru
+      tags:
+        - Threads
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddThreadPayload"
+      responses:
+        201:
+          description: Thread berhasil dibuat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AddThreadResponse"
+        400:
+          description: Payload tidak memenuhi spesifikasi data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonErrorResponse"
+        401:
+          description: Request tidak diautentikasi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonErrorResponse"
+
+  /threads/{threadId}:
+    get:
+      summary: Dapatkan Detail Thread Beserta Komentar dan Balasannya
+      tags:
+        - Threads
+      parameters:
+        - name: threadId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: thread-123
+      responses:
+        200:
+          description: Detail thread berhasil ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetThreadResponse"
+        404:
+          description: Thread tidak ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonErrorResponse"
+
+  /threads/{threadId}/comments:
+    post:
+      summary: Menambahkan Komentar Pada Thread
+      tags:
+        - Comments
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: threadId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: thread-123
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddCommentPayload"
+      responses:
+        201:
+          description: Komentar berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AddCommentResponse"
+        400:
+          description: Parameter tidak lengkap atau salah tipe data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonErrorResponse"
+        401:
+          description: Request tidak diautentikasi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonErrorResponse"
+        404:
+          description: Thread tidak ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonErrorResponse"
+
+  /threads/{threadId}/comments/{commentId}:
+    delete:
+      summary: Menghapus Komentar (Soft Delete)
+      tags:
+        - Comments
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: threadId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: thread-123
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: comment-123
+      responses:
+        200:
+          description: Komentar berhasil dihapus
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+        401:
+          description: Request tidak diautentikasi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonErrorResponse"
+        403:
+          description: Pengguna bukan pemilik komentar
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonErrorResponse"
+        404:
+          description: Thread atau komentar tidak ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonErrorResponse"
+
+  /threads/{threadId}/comments/{commentId}/likes:
+    put:
+      summary: Menyukai / Membatalkan Suka Komentar (Like/Unlike Toggle)
+      tags:
+        - Likes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: threadId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: thread-123
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: comment-123
+      responses:
+        200:
+          description: Status suka komentar berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+        401:
+          description: Request tidak diautentikasi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonErrorResponse"
+        404:
+          description: Thread atau komentar tidak ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonErrorResponse"
+
+  /threads/{threadId}/comments/{commentId}/replies:
+    post:
+      summary: Menambahkan Balasan Pada Komentar
+      tags:
+        - Replies
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: threadId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: thread-123
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: comment-123
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddReplyPayload"
+      responses:
+        201:
+          description: Balasan berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AddReplyResponse"
+        400:
+          description: Parameter tidak lengkap atau salah tipe data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonErrorResponse"
+        401:
+          description: Request tidak diautentikasi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonErrorResponse"
+        404:
+          description: Thread atau komentar tidak ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonErrorResponse"
+
+  /threads/{threadId}/comments/{commentId}/replies/{replyId}:
+    delete:
+      summary: Menghapus Balasan (Soft Delete)
+      tags:
+        - Replies
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: threadId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: thread-123
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: comment-123
+        - name: replyId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: reply-123
+      responses:
+        200:
+          description: Balasan berhasil dihapus
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+        401:
+          description: Request tidak diautentikasi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonErrorResponse"
+        403:
+          description: Pengguna bukan pemilik balasan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonErrorResponse"
+        404:
+          description: Thread, komentar, atau balasan tidak ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommonErrorResponse"

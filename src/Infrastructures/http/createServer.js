@@ -5,12 +5,19 @@ import GeneralErrorTranslator from '../../Commons/exceptions/GeneralErrorTransla
 import users from '../../Interfaces/http/api/users/index.js';
 import authentications from '../../Interfaces/http/api/authentications/index.js';
 import threads from '../../Interfaces/http/api/threads/index.js';
+import swaggerUi from 'swagger-ui-express';
+import yaml from 'yamljs';
+import path from 'path';
 
 const createServer = async (container) => {
   const app = express();
 
   // Middleware for parsing JSON
   app.use(express.json());
+
+  // Serve OpenAPI Documentation
+  const swaggerDocument = yaml.load(path.resolve(process.cwd(), './docs/openapi.yaml'));
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
   // Register routes
   app.use('/users', users(container));
