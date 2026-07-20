@@ -1,7 +1,17 @@
-node_modules
-package-lock.json
-.idea
-config/database/test.json
-coverage
+# Dependency directories
+node_modules/
+
+# Testing & Coverage
+coverage/
+
+# Environment variables & secrets
 .env
 .test.env
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.sw?
+
+# Local database configuration
+config/database/test.json
