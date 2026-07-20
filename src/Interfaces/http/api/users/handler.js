@@ -1,4 +1,5 @@
 import AddUserUseCase from '../../../../Applications/use_case/AddUserUseCase.js';
+import logger from '../../../../Commons/utils/logger.js';
 
 class UsersHandler {
   constructor(container) {
@@ -11,6 +12,8 @@ class UsersHandler {
     try {
       const addUserUseCase = this._container.getInstance(AddUserUseCase.name);
       const addedUser = await addUserUseCase.execute(req.body);
+
+      logger.info(`New user registered: ${addedUser.username} (${addedUser.id})`);
 
       res.status(201).json({
         status: 'success',

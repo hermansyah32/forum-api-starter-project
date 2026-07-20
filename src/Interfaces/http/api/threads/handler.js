@@ -5,6 +5,7 @@ import GetThreadUseCase from '../../../../Applications/use_case/GetThreadUseCase
 import AddReplyUseCase from '../../../../Applications/use_case/AddReplyUseCase.js';
 import DeleteReplyUseCase from '../../../../Applications/use_case/DeleteReplyUseCase.js';
 import ToggleLikeUseCase from '../../../../Applications/use_case/ToggleLikeUseCase.js';
+import logger from '../../../../Commons/utils/logger.js';
 
 class ThreadsHandler {
   constructor(container) {
@@ -28,6 +29,8 @@ class ThreadsHandler {
       };
       const addedThread = await addThreadUseCase.execute(payload);
 
+      logger.info(`User ${req.auth.id} created a new thread: ${addedThread.id}`);
+
       res.status(201).json({
         status: 'success',
         data: {
@@ -49,6 +52,8 @@ class ThreadsHandler {
         owner: req.auth.id,
       };
       const addedComment = await addCommentUseCase.execute(payload);
+
+      logger.info(`User ${req.auth.id} added comment ${addedComment.id} to thread ${threadId}`);
 
       res.status(201).json({
         status: 'success',
@@ -74,6 +79,8 @@ class ThreadsHandler {
       const deleteCommentUseCase = this._container.getInstance(DeleteCommentUseCase.name);
       await deleteCommentUseCase.execute(deletePayload);
 
+      logger.info(`User ${owner} deleted comment ${commentId} in thread ${threadId}`);
+
       res.status(200).json({
         status: 'success',
       });
@@ -87,6 +94,8 @@ class ThreadsHandler {
       const { threadId } = req.params;
       const getThreadUseCase = this._container.getInstance(GetThreadUseCase.name);
       const thread = await getThreadUseCase.execute(threadId);
+
+      logger.info(`Thread ${threadId} was read`);
 
       res.status(200).json({
         status: 'success',
@@ -111,6 +120,8 @@ class ThreadsHandler {
       };
       const addedReply = await addReplyUseCase.execute(payload);
 
+      logger.info(`User ${req.auth.id} replied to comment ${commentId} in thread ${threadId} (reply: ${addedReply.id})`);
+
       res.status(201).json({
         status: 'success',
         data: {
@@ -134,6 +145,8 @@ class ThreadsHandler {
       };
       await deleteReplyUseCase.execute(payload);
 
+      logger.info(`User ${req.auth.id} deleted reply ${replyId} of comment ${commentId} in thread ${threadId}`);
+
       res.status(200).json({
         status: 'success',
       });
@@ -152,6 +165,8 @@ class ThreadsHandler {
         userId: req.auth.id,
       };
       await toggleLikeUseCase.execute(payload);
+
+      logger.info(`User ${req.auth.id} toggled like on comment ${commentId} in thread ${threadId}`);
 
       res.status(200).json({
         status: 'success',
