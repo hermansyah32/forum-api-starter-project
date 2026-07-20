@@ -1,6 +1,7 @@
 /* istanbul ignore file */
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 
 if (process.env.NODE_ENV === 'test') {
   dotenv.config({
@@ -10,6 +11,19 @@ if (process.env.NODE_ENV === 'test') {
 } else {
   dotenv.config();
 }
+
+const getSslConfig = () => {
+  if (process.env.PGSSL === 'true') {
+    if (process.env.PGSSLCA) {
+      return {
+        rejectUnauthorized: true,
+        ca: fs.readFileSync(path.resolve(process.cwd(), process.env.PGSSLCA)).toString(),
+      };
+    }
+    return { rejectUnauthorized: false };
+  }
+  return undefined;
+};
 
 const config = {
   app: {
@@ -23,6 +37,7 @@ const config = {
     user: process.env.PGUSER,
     password: process.env.PGPASSWORD,
     database: process.env.PGDATABASE,
+    ssl: getSslConfig(),
   },
   auth: {
     jwtStrategy: 'forumapi',
