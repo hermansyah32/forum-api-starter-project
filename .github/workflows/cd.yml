@@ -1,4 +1,4 @@
-name: CD to Production
+name: Continuous Deployment
 
 on:
     push:
